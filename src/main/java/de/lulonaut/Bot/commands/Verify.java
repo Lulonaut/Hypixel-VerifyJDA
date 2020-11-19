@@ -55,5 +55,7 @@ public class Verify extends ListenerAdapter {
             event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But the API returned the following for your linked Discord: `" + DiscordLinked + "`. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
+        //TODO: add additonal logic
+
     }
 }
