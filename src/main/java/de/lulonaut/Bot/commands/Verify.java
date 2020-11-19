@@ -37,11 +37,11 @@ public class Verify extends ListenerAdapter {
                 return;
             }
         } catch (Exception e) {
-            event.getChannel().sendMessage("Some error occured, maybe the API is down. Please try again later").queue();
+            event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
             return;
         }
 
-        //Discord optained, checking if it matches their Discord
+        //Discord obtained, checking if it matches their Discord
         //Case: Discord is null (not Linked anything)
 
         if (DiscordLinked.equals("null")) {
@@ -55,7 +55,7 @@ public class Verify extends ListenerAdapter {
             event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But the API returned the following for your linked Discord: `" + DiscordLinked + "`. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
-        //TODO: add additonal logic (adding roles etc)
+        //TODO: add additional logic (adding roles etc)
 
     }
 }
