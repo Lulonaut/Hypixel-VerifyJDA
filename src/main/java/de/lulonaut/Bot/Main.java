@@ -1,7 +1,6 @@
 package de.lulonaut.Bot;
 
 import de.lulonaut.Bot.commands.Calculate;
-import de.lulonaut.Bot.commands.UserInfo;
 import de.lulonaut.Bot.commands.Verify;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
@@ -20,6 +19,7 @@ public class Main {
 
     static {
         try {
+            //start bot with token
             jda = JDABuilder.createDefault(Config.getConf("bot.token")).build();
         } catch (LoginException e) {
             System.out.println("The Token is invalid! Please check your config.");
@@ -49,7 +49,6 @@ public class Main {
 
     public static void registerCommands() {
         jda.addEventListener(new Calculate());
-        jda.addEventListener(new UserInfo());
         jda.addEventListener(new Verify());
     }
 
