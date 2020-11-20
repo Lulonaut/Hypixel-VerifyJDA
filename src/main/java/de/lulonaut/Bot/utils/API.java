@@ -28,6 +28,50 @@ public class API {
             return "error";
         }
     }
+    public static String[] getError(String name){return new String[]{"error"};}
+    public static String[] getStuff(String name) throws IOException {
+
+        JSONObject player = readJsonFromUrl("https://api.slothpixel.me/api/players/" + name);
+        String Discord = null;
+        String Nickname = null;
+        String Rank = null;
+
+        JSONObject guild = readJsonFromUrl("https://api.slothpixel.me/api/guilds/" + name);
+        String Guild = null;
+
+        //Error Handling
+        if (player == null) {
+            return new String[]{"error"};
+        } else if (guild == null) {
+            return new String[]{"error"};
+        }
+
+        try {
+            player.getString("error");
+            guild.getString("error");
+            return new String[]{"error"};
+        } catch (Exception ignored) {
+        }
+
+        //Get linked Discord
+        JSONObject links = player.getJSONObject("links");
+        Discord = links.getString("DISCORD");
+
+        //get Nickname
+        Nickname = player.getString("username");
+
+        //get Rank
+        Rank = player.getString("rank");
+
+        //get Guild
+        try {
+            guild.getString("guild");
+        } catch (Exception e) {
+            Guild = guild.getString("name");
+        }
+
+        return new String[]{Discord, Nickname, Rank, Guild};
+    }
 
     //util Functions for getting JSON (stolen from the Internet)
     private static String readAll(Reader rd) throws IOException {
