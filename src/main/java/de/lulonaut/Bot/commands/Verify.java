@@ -16,7 +16,7 @@ public class Verify extends ListenerAdapter {
 
         //Checking if it's the actual command:
         String[] msg = event.getMessage().getContentRaw().split(" ");
-        String DiscordLinked;
+        String[] APIResult;
         String UserDiscord = Objects.requireNonNull(event.getMember()).getUser().getAsTag();
 
         if (!msg[0].equalsIgnoreCase(Main.PREFIX + "verify")) {
@@ -31,8 +31,8 @@ public class Verify extends ListenerAdapter {
         //Command logic
         try {
             //Getting the linked Discord + Error handling
-            DiscordLinked = API.getDiscord(msg[1]);
-            if (DiscordLinked.equals("error")) {
+            APIResult = API.getStuff(msg[1]);
+            if (APIResult[0].equals("error")) {
                 event.getChannel().sendMessage("There was an Error while checking your linked Discord, please try again later! (API probably down)").queue();
                 return;
             }
@@ -42,20 +42,28 @@ public class Verify extends ListenerAdapter {
         }
 
         //Discord obtained, checking if it matches their Discord
-        //Case: Discord is null (not Linked anything)
+        String Discord = APIResult[0];
+        String Nickname = APIResult[1];
+        String Rank = APIResult[2];
+        String Guild = APIResult[3];
 
-        if (DiscordLinked.equals("null")) {
+        //Case: Discord is null (not Linked anything)
+        if (Discord.equals("null")) {
             //TODO add Command linkdc
             event.getChannel().sendMessage("Looks you didn't link a Discord yet. // If you don't know how to add one please type '" + Main.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
-            return;
         }
 
         //Case : Discord doesn't match
-        if (!UserDiscord.equals(DiscordLinked)) {
-            event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But the API returned the following for your linked Discord: `" + DiscordLinked + "`. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
+        else if (!UserDiscord.equals(Discord)) {
+            event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But a wise man told me you linked this Discord in Minecraft: `" + Discord + "`. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
-        //TODO: add additional logic (adding roles etc)
+        //Case : Discord does match
+        else {
+            //TODO: add additional logic (adding roles etc)
+            event.getChannel().sendMessage("linked ig").queue();
+        }
+
 
     }
 }
