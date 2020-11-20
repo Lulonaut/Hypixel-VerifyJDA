@@ -9,26 +9,6 @@ import java.nio.charset.StandardCharsets;
 
 public class API {
 
-    public static String getDiscord(String name) {
-        //returns linked Discord
-        try {
-            JSONObject json = readJsonFromUrl("https://api.slothpixel.me/api/players/" + name);
-            if (json == null) {
-                return "404";
-            }
-            JSONObject links = json.getJSONObject("links");
-            //return Discord link if there is no error
-            try {
-                return links.getString("DISCORD");
-            } catch (JSONException e) {
-                return "null";
-            }
-        } catch (Exception e) {
-            //return "error" String when there is an error (Linked Discord can't be "error" so should be fine)
-            return "error";
-        }
-    }
-    public static String[] getError(String name){return new String[]{"error"};}
     public static String[] getStuff(String name) throws IOException {
 
         JSONObject player = readJsonFromUrl("https://api.slothpixel.me/api/players/" + name);
