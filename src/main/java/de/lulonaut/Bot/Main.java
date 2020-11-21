@@ -26,12 +26,13 @@ public class Main {
     static {
         try {
             //start bot with token
-            jda = JDABuilder.createDefault(Config.getConf("bot.token", false)).build();
+            jda = JDABuilder.createDefault(Config.getConf("token", false)).build();
         } catch (LoginException e) {
             System.out.println("The Token is invalid! Please check your config.");
             System.exit(1);
         } catch (Exception e) {
             System.out.println("There was an error while logging in, please try again and check your config!");
+            System.exit(1);
         }
     }
 
@@ -62,20 +63,20 @@ public class Main {
     }
 
     public static void loadConf() throws IOException {
-        PREFIX = Config.getConf("bot.prefix", false);
-        VerifyRole = Config.getConf("bot.role", false);
-        OptionalRole = Config.getConf("bot.optionalrole", true);
-        if (Config.getConf("bot.rankroles", true).equalsIgnoreCase("true")) {
+        PREFIX = Config.getConf("prefix", false);
+        VerifyRole = Config.getConf("role", false);
+        OptionalRole = Config.getConf("optionalrole", true);
+        if (Config.getConf("rankroles", true).equalsIgnoreCase("true")) {
             RankRoles = true;
         }
-        if (Config.getConf("bot.guildroletoggle", false).equalsIgnoreCase("true")) {
+        if (Config.getConf("guildroletoggle", false).equalsIgnoreCase("true")) {
             GuildRoles = true;
         }
-        if (Config.getConf("bot.guild", true) != null) {
-            Guild = Config.getConf("bot.guild", true);
+        if (Config.getConf("guild", true) != null) {
+            Guild = Config.getConf("guild", true);
         }
-        if(Config.getConf("bot.guildrole", true) != null){
-            GuildRole = Config.getConf("bot.guildrole", true);
+        if (Config.getConf("guildrole", true) != null) {
+            GuildRole = Config.getConf("guildrole", true);
         }
     }
 }
