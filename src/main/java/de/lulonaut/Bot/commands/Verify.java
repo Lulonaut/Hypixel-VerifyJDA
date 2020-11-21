@@ -62,7 +62,6 @@ public class Verify extends ListenerAdapter {
 
         //Case : Discord does match
         else {
-            //TODO: add additional logic (adding roles etc)
             try {
                 //Add Role(s)
                 event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Main.VerifyRole, false).get(0)).queue();
@@ -90,6 +89,10 @@ public class Verify extends ListenerAdapter {
                     } catch (Exception e) {
                         event.getChannel().sendMessage("Looks like a rank role does not exist, please ask an Admin to add the following Role: `" + Rank + "`").queue();
                     }
+                }
+
+                if (Main.GuildRoles && Guild.equals(Main.Guild)) {
+
                 }
 
             } catch (HierarchyException e) {

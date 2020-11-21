@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 public class API {
 
-    public static String[] getStuff(String name) throws IOException {
+    public static String[] getStuff(String name) {
         JSONObject guild;
         JSONObject player;
 

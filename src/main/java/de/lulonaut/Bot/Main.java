@@ -19,6 +19,8 @@ public class Main {
     public static String OptionalRole;
     public static Boolean RankRoles = false;
     public static Boolean GuildRoles = false;
+    public static String Guild = null;
+    public static String GuildRole = null;
     private static JDA jda;
 
     static {
@@ -39,7 +41,7 @@ public class Main {
         loadConf();
         System.out.println("Prefix from Config set to: " + PREFIX);
         if (RankRoles) {
-            System.out.println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++");
+            System.out.println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++. Otherwise there will be constant Errors");
         }
         System.out.println("Config loaded.");
         registerEvents();
@@ -66,10 +68,14 @@ public class Main {
         if (Config.getConf("bot.rankroles", true).equalsIgnoreCase("true")) {
             RankRoles = true;
         }
-        if(Config.getConf("bot.guildroletoggle", true).equalsIgnoreCase("true")){
+        if (Config.getConf("bot.guildroletoggle", false).equalsIgnoreCase("true")) {
             GuildRoles = true;
         }
-
+        if (Config.getConf("bot.guild", true) != null) {
+            Guild = Config.getConf("bot.guild", true);
+        }
+        if(Config.getConf("bot.guildrole", true) != null){
+            GuildRole = Config.getConf("bot.guildrole", true);
+        }
     }
-
 }
