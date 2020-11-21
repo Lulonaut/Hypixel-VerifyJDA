@@ -3,6 +3,7 @@ package de.lulonaut.Bot.commands;
 import de.lulonaut.Bot.Main;
 import de.lulonaut.Bot.utils.API;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Objects;
@@ -46,7 +47,8 @@ public class Verify extends ListenerAdapter {
         String Nickname = APIResult[1];
         String Rank = APIResult[2];
         String Guild = APIResult[3];
-
+        int ErrorCount = 0;
+        int Errors = 0;
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
             //TODO add Command linkdc
@@ -61,9 +63,49 @@ public class Verify extends ListenerAdapter {
         //Case : Discord does match
         else {
             //TODO: add additional logic (adding roles etc)
-            event.getChannel().sendMessage("linked ig").queue();
+            try {
+                //Add Role(s)
+                event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Main.VerifyRole, false).get(0)).queue();
+                if (!(Main.OptionalRole == null)) {
+                    event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Main.OptionalRole, false).get(0)).queue();
+                }
+
+                //Change Nickname
+                event.getMember().modifyNickname(Nickname).queue();
+
+                //Add Role for Rank if enabled
+                if (Main.RankRoles) {
+                    switch (Rank) {
+                        case "VIP_PLUS":
+                            Rank = "VIP+";
+                        case "MVP_PLUS":
+                            Rank = "MVP+";
+                        case "MVP_PLUS_PLUS":
+                            Rank = "MVP++";
+                    }
+                    try {
+                        if (!Rank.equals("null")) {
+                            event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Rank, true).get(0)).queue();
+                        }
+                    } catch (Exception e) {
+                        event.getChannel().sendMessage("Looks like a rank role does not exist, please ask an Admin to add the following Role: `" + Rank + "`").queue();
+                    }
+                }
+
+            } catch (HierarchyException e) {
+                ErrorCount++;
+            } catch (Exception e) {
+                Errors++;
+            }
+
+            if (ErrorCount > 0) {
+                event.getChannel().sendMessage("You have higher Perms than me so i couldn't change much. But your Discord matches the one linked on Minecraft :D").queue();
+
+            } else if (Errors > 0) {
+                event.getChannel().sendMessage("Some internal error happened, please contact a Admin :(").queue();
+            } else {
+                event.getChannel().sendMessage("I added a Role, changed your Nickname etc.").queue();
+            }
         }
-
-
     }
 }

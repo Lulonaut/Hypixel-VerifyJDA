@@ -15,12 +15,16 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static String PREFIX;
+    public static String VerifyRole;
+    public static String OptionalRole;
+    public static Boolean RankRoles = false;
+    public static Boolean GuildRoles = false;
     private static JDA jda;
 
     static {
         try {
             //start bot with token
-            jda = JDABuilder.createDefault(Config.getConf("bot.token")).build();
+            jda = JDABuilder.createDefault(Config.getConf("bot.token", false)).build();
         } catch (LoginException e) {
             System.out.println("The Token is invalid! Please check your config.");
             System.exit(1);
@@ -34,6 +38,9 @@ public class Main {
         TimeUnit.SECONDS.sleep(3);
         loadConf();
         System.out.println("Prefix from Config set to: " + PREFIX);
+        if (RankRoles) {
+            System.out.println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++");
+        }
         System.out.println("Config loaded.");
         registerEvents();
         System.out.println("All Events registered!");
@@ -53,7 +60,16 @@ public class Main {
     }
 
     public static void loadConf() throws IOException {
-        PREFIX = Config.getConf("bot.prefix");
+        PREFIX = Config.getConf("bot.prefix", false);
+        VerifyRole = Config.getConf("bot.role", false);
+        OptionalRole = Config.getConf("bot.optionalrole", true);
+        if (Config.getConf("bot.rankroles", true).equalsIgnoreCase("true")) {
+            RankRoles = true;
+        }
+        if(Config.getConf("bot.guildroletoggle", true).equalsIgnoreCase("true")){
+            GuildRoles = true;
+        }
+
     }
 
 }
