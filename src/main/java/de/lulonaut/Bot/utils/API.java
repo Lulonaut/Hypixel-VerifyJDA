@@ -10,13 +10,21 @@ import java.nio.charset.StandardCharsets;
 public class API {
 
     public static String[] getStuff(String name) throws IOException {
+        JSONObject guild;
+        JSONObject player;
 
-        JSONObject player = readJsonFromUrl("https://api.slothpixel.me/api/players/" + name);
-        String Discord = null;
-        String Nickname = null;
-        String Rank = null;
+        try {
+            guild = readJsonFromUrl("https://api.slothpixel.me/api/guilds/" + name);
+            player = readJsonFromUrl("https://api.slothpixel.me/api/players/" + name);
+        } catch (IOException e) {
+            return new String[]{"error"};
+        }
 
-        JSONObject guild = readJsonFromUrl("https://api.slothpixel.me/api/guilds/" + name);
+        String Discord;
+        String Nickname;
+        String Rank;
+
+
         String Guild = null;
 
         //Error Handling
@@ -64,15 +72,13 @@ public class API {
     }
 
     private static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
+        try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String jsonText = readAll(rd);
+            rd.close();
             return new JSONObject(jsonText);
         } catch (FileNotFoundException e) {
             return null;
-        } finally {
-            is.close();
         }
     }
 
