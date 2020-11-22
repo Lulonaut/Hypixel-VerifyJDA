@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 public class API {
 
-    public static String[] getStuff(String name, String Endpoint) throws IOException {
+    public static String[] getStuff(String name, String Endpoint) {
         JSONObject guildAPI;
         JSONObject playerAPI;
         String Discord;
@@ -71,7 +71,6 @@ public class API {
 
             //get Nickname
             Nickname = player.getDisplayName();
-            String UUID = String.valueOf(player.getUUID());
 
             //get Rank
             Rank = String.valueOf(player.getNewPackageRank());
