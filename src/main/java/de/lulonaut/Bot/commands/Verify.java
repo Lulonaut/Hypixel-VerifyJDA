@@ -32,13 +32,14 @@ public class Verify extends ListenerAdapter {
         //Command logic
         try {
             //Getting the linked Discord + Error handling
-            APIResult = API.getStuff(msg[1]);
+            APIResult = API.getStuff(msg[1], Main.Endpoint);
             if (APIResult[0].equals("error")) {
                 event.getChannel().sendMessage("There was an Error while checking your linked Discord, please try again later! (API probably down)").queue();
                 return;
             }
         } catch (Exception e) {
             event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
+            e.printStackTrace();
             return;
         }
 
@@ -47,8 +48,11 @@ public class Verify extends ListenerAdapter {
         String Nickname = APIResult[1];
         String Rank = APIResult[2];
         String Guild = APIResult[3];
+        System.out.println(Guild);
         int ErrorCount = 0;
         int Errors = 0;
+
+
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
             //TODO add Command linkdc

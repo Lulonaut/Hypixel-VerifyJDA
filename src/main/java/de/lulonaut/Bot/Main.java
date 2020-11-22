@@ -21,6 +21,8 @@ public class Main {
     public static Boolean GuildRoles = false;
     public static String Guild = null;
     public static String GuildRole = null;
+    public static String Endpoint; // API Endpoint
+    public static String APIKey; //Api Key for Hypixel API
     private static JDA jda;
 
     static {
@@ -35,7 +37,6 @@ public class Main {
             System.exit(1);
         }
     }
-
 
     public static void main(String[] args) throws IOException, InterruptedException {
         TimeUnit.SECONDS.sleep(3);
@@ -66,6 +67,18 @@ public class Main {
         PREFIX = Config.getConf("prefix", false);
         VerifyRole = Config.getConf("role", false);
         OptionalRole = Config.getConf("optionalrole", true);
+        Endpoint = Config.getConf("apiendpoint", true);
+        if (!Endpoint.equalsIgnoreCase("hypixel") && !Endpoint.equalsIgnoreCase("slothpixel")) {
+            System.out.println("Invalid API endpoint, choose either Hypixel or Slothpixel. (Defaulting to Slothpixel)");
+            Endpoint = "slothpixel";
+        } else if (Endpoint.equalsIgnoreCase("hypixel")) {
+            APIKey = Config.getConf("hypixelapikey", false);
+            if (APIKey == null) {
+                System.out.println("No API key given. Please enter one in the Config (Defaulting to Slothpixel)");
+                Endpoint = "slothpixel";
+            }
+        }
+
         if (Config.getConf("rankroles", true).equalsIgnoreCase("true")) {
             RankRoles = true;
         }
