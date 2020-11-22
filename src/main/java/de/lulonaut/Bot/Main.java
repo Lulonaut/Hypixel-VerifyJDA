@@ -23,7 +23,7 @@ public class Main {
     public static String GuildRole = null;
     public static String Endpoint; // API Endpoint
     public static String APIKey; //Api Key for Hypixel API
-    private static JDA jda;
+    public static JDA jda;
 
     static {
         try {
@@ -55,12 +55,12 @@ public class Main {
     public static void registerEvents() {
         jda.addEventListener(new MessageListener());
         jda.addEventListener(new CategoryCreateListener());
-
     }
 
     public static void registerCommands() {
         jda.addEventListener(new Calculate());
         jda.addEventListener(new Verify());
+
     }
 
     public static void loadConf() throws IOException {

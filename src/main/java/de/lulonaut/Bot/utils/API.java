@@ -10,8 +10,6 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.UUID;
 
 public class API {
 
@@ -63,6 +61,7 @@ public class API {
 
             return new String[]{Discord, Nickname, Rank, Guild};
         } else if (Endpoint.equals("hypixel")) {
+            System.out.println("Creating");
             HypixelAPI API = HypixelAPI.create(Main.APIKey);
             //get Discord
             HypixelPlayer player = API.getPlayer(name);
@@ -78,15 +77,13 @@ public class API {
             Rank = String.valueOf(player.getNewPackageRank());
 
             //get Guild
-            String GuildID = API.getGuildId(Main.Guild);
+            //String GuildID = API.getGuildId(Main.Guild);
 
-            System.out.println(UUID);
-            Guild = (API.getGuild(GuildID).getMembers().contains(UUID) ? Main.Guild : "null");
-            System.out.println(API.getGuild(GuildID).getMembers());
+            //System.out.println(UUID);
+            //Guild = (API.getGuild(GuildID).getMembers().contains(UUID) ? Main.Guild : "null");
+            //System.out.println(API.getGuild(GuildID).getMembers());
+            Guild = null;
 
-
-
-            HypixelAPI.shutdown();
             return new String[]{Discord, Nickname, Rank, Guild};
         }
         return null;

@@ -39,7 +39,6 @@ public class Verify extends ListenerAdapter {
             }
         } catch (Exception e) {
             event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
-            e.printStackTrace();
             return;
         }
 
@@ -95,13 +94,14 @@ public class Verify extends ListenerAdapter {
                     }
                 }
 
-                if (Main.GuildRoles && Guild.equals(Main.Guild)) {
-
-                }
+                //if (Main.GuildRoles && Guild.equals(Main.Guild)) {
+                //
+                //}
 
             } catch (HierarchyException e) {
                 ErrorCount++;
             } catch (Exception e) {
+                e.printStackTrace();
                 Errors++;
             }
 
