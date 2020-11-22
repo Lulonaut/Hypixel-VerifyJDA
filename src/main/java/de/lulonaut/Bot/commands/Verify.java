@@ -80,10 +80,13 @@ public class Verify extends ListenerAdapter {
                     switch (Rank) {
                         case "VIP_PLUS":
                             Rank = "VIP+";
+                            break;
                         case "MVP_PLUS":
                             Rank = "MVP+";
+                            break;
                         case "MVP_PLUS_PLUS":
                             Rank = "MVP++";
+                            break;
                     }
                     try {
                         if (!Rank.equals("null")) {
