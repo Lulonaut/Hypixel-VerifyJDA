@@ -14,7 +14,7 @@ public class Calculate extends ListenerAdapter {
 
         if (msg[0].equalsIgnoreCase(Main.PREFIX + "calculate")) {
             if (msg.length != 4) {
-                event.getChannel().sendMessage("Missing Parameters! Usage: .calculate [add/sub] [first-num] [second-num").queue();
+                event.getChannel().sendMessage("Missing Parameters! Usage: " + Main.PREFIX + " [add/sub] [first-num] [second-num]").queue();
                 return;
             }
 
