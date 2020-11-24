@@ -10,10 +10,11 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class API {
 
-    public static String[] getStuff(String name, String Endpoint) {
+    public static String[] getStuff(String name, String Endpoint) throws IOException {
         JSONObject guildAPI;
         JSONObject playerAPI;
         String Discord;
@@ -60,9 +61,13 @@ public class API {
             }
 
             return new String[]{Discord, Nickname, Rank, Guild};
+
         } else if (Endpoint.equals("hypixel")) {
-            System.out.println("Creating");
+            //establish API connection(s)
             HypixelAPI API = HypixelAPI.create(Main.APIKey);
+            String UUID = Objects.requireNonNull(readJsonFromUrl("https://api.mojang.com/users/profiles/minecraft/" + name)).getString("id");
+            JSONObject guild = readJsonFromUrl("https://api.hypixel.net/guild?key=" + Main.APIKey + "&player=" + UUID);
+
             //get Discord
             HypixelPlayer player = API.getPlayer(name);
             Discord = player.getSocialMedia().getLinks().get(SocialMediaType.DISCORD);
@@ -76,20 +81,23 @@ public class API {
             Rank = String.valueOf(player.getNewPackageRank());
 
             //get Guild
-            //String GuildID = API.getGuildId(Main.Guild);
+            System.out.println("UUID of " + name + " : " + UUID);
 
-            //System.out.println(UUID);
-            //Guild = (API.getGuild(GuildID).getMembers().contains(UUID) ? Main.Guild : "null");
-            //System.out.println(API.getGuild(GuildID).getMembers());
-            Guild = null;
+            try {
+                assert guild != null;
+                Guild = guild.getJSONObject("guild").getString("name");
+            } catch (Exception e) {
+                Guild = String.valueOf(guild.get("guild"));
+            }
 
             return new String[]{Discord, Nickname, Rank, Guild};
+        } else {
+            return null;
         }
-        return null;
     }
 
     //util Functions for getting JSON (stolen from the Internet)
-    private static String readAll(Reader rd) throws IOException {
+    public static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
         while ((cp = rd.read()) != -1) {
@@ -98,7 +106,7 @@ public class API {
         return sb.toString();
     }
 
-    private static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String jsonText = readAll(rd);
