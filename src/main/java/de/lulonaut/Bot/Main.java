@@ -1,6 +1,7 @@
 package de.lulonaut.Bot;
 
 import de.lulonaut.Bot.commands.Calculate;
+import de.lulonaut.Bot.commands.LinkDiscordHelp;
 import de.lulonaut.Bot.commands.Verify;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
@@ -60,6 +61,7 @@ public class Main {
     public static void registerCommands() {
         jda.addEventListener(new Calculate());
         jda.addEventListener(new Verify());
+        jda.addEventListener(new LinkDiscordHelp());
 
     }
 
