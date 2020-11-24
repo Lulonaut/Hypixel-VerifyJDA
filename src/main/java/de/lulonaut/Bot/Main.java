@@ -66,6 +66,8 @@ public class Main {
     }
 
     public static void loadConf() throws IOException {
+        //Load Config Variables
+
         PREFIX = Config.getConf("prefix", false);
         VerifyRole = Config.getConf("role", false);
         OptionalRole = Config.getConf("optionalrole", true);
@@ -74,7 +76,7 @@ public class Main {
             System.out.println("Invalid API endpoint, choose either Hypixel or Slothpixel. (Defaulting to Slothpixel)");
             Endpoint = "slothpixel";
         } else if (Endpoint.equalsIgnoreCase("hypixel")) {
-            APIKey = Config.getConf("hypixelapikey", false);
+            APIKey = Config.getConf("hypixelapikey", true);
             if (APIKey == null) {
                 System.out.println("No API key given. Please enter one in the Config (Defaulting to Slothpixel)");
                 Endpoint = "slothpixel";

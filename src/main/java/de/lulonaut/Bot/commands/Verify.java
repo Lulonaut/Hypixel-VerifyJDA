@@ -8,10 +8,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Objects;
 
+/**
+ * Verify Command
+ */
+
+
 public class Verify extends ListenerAdapter {
-    /**
-     * Verify Command
-     */
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
