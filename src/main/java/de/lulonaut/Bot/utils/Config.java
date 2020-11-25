@@ -1,32 +1,62 @@
 package de.lulonaut.Bot.utils;
 
+import de.lulonaut.Bot.Main;
+import de.lulonaut.Bot.errors.ConfigException;
+
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * <h1>Config</h1>
+ * This is a util Class that loads part of the Config on demand
+ *
+ * @see Main#loadConf()
+ */
+
 
 public class Config {
+    /**
+     * <h1>Loads a part of the Config with the given String</h1>
+     *
+     * @param entry    (String) Entry in the file, eg: token
+     * @param optional (Boolean) If the entry is not needed to run the program, set to true. Non existent
+     * @return (String) Value of the config.
+     * @throws IOException     On incorrect input
+     * @throws ConfigException When optional is false but no entry is given or file doesn't exist
+     */
 
-    public static Properties getProp() throws IOException {
-        Properties props = new Properties();
-        FileInputStream file = new FileInputStream("config/config.properties");
-        props.load(file);
-        file.close();
-        return props;
-
-    }
-
-    public static String getConf(String entry, Boolean optional) throws IOException {
-        Properties prop = getProp();
+    public static String getConf(String entry, Boolean optional) throws IOException, ConfigException {
+        String FilePath = "config/config.properties";
         String toReturn;
 
-        toReturn = prop.getProperty(entry);
-        if (toReturn == null && !optional) {
-            System.out.println("Some part of the config is missing: " + entry + "\nPlease add it or redownload the config file!");
-            System.exit(1);
-        } else if (toReturn == null){
-            return null;
+        Properties props = new Properties();
+        File dir = new File(FilePath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+            System.out.println("Created config file so it needs to be filled first!");
+            throw new ConfigException("Created a config file in " + FilePath + ". Please fill it like here: https://github.com/Lulonaut/Hypixel-VerifyJDA/blob/master/config/config.properties");
         }
-        return prop.getProperty(entry);
+
+        try {
+            FileInputStream file = new FileInputStream(FilePath);
+            props.load(file);
+            file.close();
+        } catch (FileNotFoundException e) {
+            throw new ConfigException("config file not present.");
+        }
+        //Error Handling
+        toReturn = props.getProperty(entry);
+        if (toReturn == null && !optional) {
+            throw new ConfigException(entry + " is missing in the Config file.");
+        } else if (toReturn == null) {
+            return null;
+        } else if (toReturn.equals("") && !optional) {
+            throw new ConfigException(entry + " can't be empty");
+        }
+
+        return props.getProperty(entry);
     }
 }
