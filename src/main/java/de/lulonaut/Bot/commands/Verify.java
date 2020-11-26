@@ -9,9 +9,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.util.Objects;
 
 /**
- * Verify Command
+ * <h1>Verify Command</h1>
+ * This Command takes a Username and then checks their Linked Discord on Hypixel. If it matches their Discord Tag they get a role and some other stuff happens depending on the Config
+ * @see de.lulonaut.Bot.utils.Config
  */
-
 
 public class Verify extends ListenerAdapter {
 
