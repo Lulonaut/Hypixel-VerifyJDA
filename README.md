@@ -1,4 +1,6 @@
-Bot in JDA devloped using JDK 11 
+Bot in JDA developed using JDK 11.
+
+
 If you get a Compiling Error in Intellij and have two Maven "Projects" on the Maven Tab, try the other one.
 
 When some dependencies show missing execute this in the console (and hit CTRL + Enter to execute it)
