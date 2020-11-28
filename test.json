@@ -1,1 +1,11 @@
-{"test":true,"name":"test"}
+{
+  "messages": {
+    "myguildID": {
+      "myID": 69,
+      "myID2": 70
+    },
+    "myguildID2": {
+      "myId": 2
+    }
+  }
+}

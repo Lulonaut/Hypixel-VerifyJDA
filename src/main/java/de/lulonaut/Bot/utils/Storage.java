@@ -8,19 +8,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
 class Storage {
 
     public static void main(String[] args) throws IOException, ParseException {
-        JSONObject object = new JSONObject();
-
+        /*JSONObject object = new JSONObject();
         object.put("name", "test");
         object.put("test", true);
 
         PrintWriter printWriter = new PrintWriter("test.json");
         printWriter.write(object.toString());
         printWriter.flush();
-        printWriter.close();
+        printWriter.close();*/
         readJSON();
     }
 
@@ -30,7 +28,16 @@ class Storage {
             //Parsing the contents of the JSON file
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("test.json"));
 
-            System.out.println(jsonObject.get("name"));
+            //get name
+            String name = (String) jsonObject.get("name");
+            System.out.println(name);
+
+            JSONObject messages = (JSONObject) jsonObject.get("messages");
+//            System.out.println(messages);
+
+            JSONObject firstGuild = (JSONObject) messages.get("myguildID");
+//            System.out.println(firstGuild);
+            System.out.println(firstGuild.get("myID"));
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();
