@@ -1,11 +1,7 @@
 {
   "messages": {
-    "myguildID": {
-      "myID": 69,
-      "myID2": 70
-    },
-    "myguildID2": {
-      "myId": 2
+    "thiswontwork": {
+      "1234657": 7
     }
   }
 }
