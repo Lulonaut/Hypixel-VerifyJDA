@@ -79,11 +79,11 @@ class Storage {
                 }
 
                 String current = String.valueOf(guildMessages.get(UserID));
-                int currenntmsg = parseInt(current);
-                currenntmsg = currenntmsg + 1;
-                System.out.println("current:" + currenntmsg);
+                int currentmsg = parseInt(current);
+                currentmsg = currentmsg + 1;
+                System.out.println("current:" + currentmsg);
 
-                guildMessages.put(UserID, currenntmsg);
+                guildMessages.put(UserID, currentmsg);
                 PrintWriter printWriter = new PrintWriter("test.json");
                 printWriter.write(String.valueOf(jsonObject));
                 printWriter.flush();
