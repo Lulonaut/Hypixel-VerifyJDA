@@ -4,9 +4,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 class Storage {
 
@@ -26,7 +26,9 @@ class Storage {
         JSONParser jsonParser = new JSONParser();
         try {
             //Parsing the contents of the JSON file
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("test.json"));
+            File file;
+            FileReader reader = new FileReader("test.json");
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
             //get name
             String name = (String) jsonObject.get("name");
@@ -38,7 +40,7 @@ class Storage {
             JSONObject firstGuild = (JSONObject) messages.get("myguildID");
 //            System.out.println(firstGuild);
             System.out.println(firstGuild.get("myID"));
-
+            reader.close();
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
