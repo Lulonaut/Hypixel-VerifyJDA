@@ -14,6 +14,7 @@ import java.util.Properties;
  * This is a util Class that loads part of the Config on demand
  *
  * @see Main#loadConf()
+ * @see Config#getConf(String, Boolean)
  */
 
 
