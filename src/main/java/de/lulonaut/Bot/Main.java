@@ -64,7 +64,6 @@ public class Main {
         jda.addEventListener(new Calculate());
         jda.addEventListener(new Verify());
         jda.addEventListener(new LinkDiscordHelp());
-
     }
 
     public static void loadConf() throws IOException, AssertionError {
