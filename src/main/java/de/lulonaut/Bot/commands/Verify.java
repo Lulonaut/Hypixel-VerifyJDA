@@ -9,9 +9,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.util.Objects;
 
 /**
- * Verify Command
+ * <h1>Verify Command</h1>
+ * This Command takes a Username and then checks their Linked Discord on Hypixel. If it matches their Discord Tag they get a role and some other stuff happens depending on the Config
+ *
+ * @see de.lulonaut.Bot.utils.Config
  */
-
 
 public class Verify extends ListenerAdapter {
 
@@ -56,7 +58,6 @@ public class Verify extends ListenerAdapter {
 
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
-            //TODO add Command linkdc
             event.getChannel().sendMessage("Looks you didn't link a Discord yet. // If you don't know how to add one please type '" + Main.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
