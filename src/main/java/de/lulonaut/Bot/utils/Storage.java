@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +19,7 @@ import static java.lang.Integer.parseInt;
 
 class Storage {
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) {
         String[] myList = sort("myGuildID");
         System.out.println(myList.length);
     }
@@ -29,7 +28,6 @@ class Storage {
         JSONParser jsonParser = new JSONParser();
         try {
             //Parsing the contents of the JSON file
-            File file;
             FileReader reader = new FileReader("test.json");
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
@@ -52,7 +50,6 @@ class Storage {
         //TODO remove or add one message
 
         //read current state
-        JSONObject object = new JSONObject();
         FileReader reader = new FileReader("test.json");
 
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(reader);
@@ -115,12 +112,13 @@ class Storage {
 
         JSONArray array = new JSONArray();
         array.add(guild);
+        reader.close();
         return array;
 
     }
 
     public static String[] sort(String GuildID) {
-        //sorts the messages of a guild
+        //sorts the messages of a given GuildID by values
         List<User> list = new ArrayList<>();
         try {
 
@@ -146,8 +144,8 @@ class Storage {
 
                 sortedUsers = ArrayUtils.add(sortedUsers, s.UserID);
                 sortedUsers = ArrayUtils.add(sortedUsers, String.valueOf(s.messages));
-
             }
+            reader.close();
             return sortedUsers;
 
         } catch (JSONException | IOException e) {
