@@ -2,6 +2,7 @@ package de.lulonaut.Bot.utils;
 
 import de.lulonaut.Bot.Main;
 import de.lulonaut.Bot.errors.ConfigException;
+import de.lulonaut.Bot.errors.ConfigNotFoundException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +30,7 @@ public class Config {
      * @throws ConfigException When optional is false but no entry is given or file doesn't exist
      */
 
-    public static String getConf(String entry, Boolean optional) throws IOException, ConfigException {
+    public static String getConf(String entry, Boolean optional) throws IOException, ConfigException, ConfigNotFoundException {
         String FilePath = "config/config.properties";
         String toReturn;
 
@@ -38,7 +39,7 @@ public class Config {
         if (!dir.exists()) {
             dir.mkdirs();
             System.out.println("Created config file so it needs to be filled first!");
-            throw new ConfigException("Created a config file in " + FilePath + ". Please fill it like here: https://github.com/Lulonaut/Hypixel-VerifyJDA/blob/master/config/config.properties");
+            throw new ConfigNotFoundException("Created a config file in " + FilePath + ". Please fill it like here: https://github.com/Lulonaut/Hypixel-VerifyJDA/blob/master/config/config.properties");
         }
 
         try {

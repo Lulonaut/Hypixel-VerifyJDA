@@ -4,6 +4,7 @@ import de.lulonaut.Bot.commands.Calculate;
 import de.lulonaut.Bot.commands.LinkDiscordHelp;
 import de.lulonaut.Bot.commands.Verify;
 import de.lulonaut.Bot.errors.ConfigException;
+import de.lulonaut.Bot.errors.ConfigNotFoundException;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
 import de.lulonaut.Bot.utils.Config;
@@ -97,7 +98,7 @@ public class Main {
             if (Config.getConf("guildrole", true) != null) {
                 GuildRole = Config.getConf("guildrole", true);
             }
-        } catch (ConfigException e) {
+        } catch (ConfigException | ConfigNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
         }
