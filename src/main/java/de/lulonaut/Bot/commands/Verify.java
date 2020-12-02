@@ -7,17 +7,21 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <h1>Verify Command</h1>
- * This Command takes a Username and then checks their Linked Discord on Hypixel. If it matches their Discord Tag they get a role and some other stuff happens depending on the Config
+ * This Command takes a Username and then checks their Linked Discord on Hypixel.
+ * If it matches their Discord Tag they get a role and some other stuff happens depending on the Config
+ *
  * @see de.lulonaut.Bot.utils.Config
  */
 
 public class Verify extends ListenerAdapter {
+    Logger logger = Logger.getLogger("logger");
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-
         //Checking if it's the actual command:
         String[] msg = event.getMessage().getContentRaw().split(" ");
         String[] APIResult;
@@ -32,16 +36,20 @@ public class Verify extends ListenerAdapter {
             return;
         }
 
+        logger.log(Level.FINE, "Verify Command is now being executed for Discord User: %s", UserDiscord);
         //Command logic
         try {
             //Getting the linked Discord + Error handling
+            logger.log(Level.FINE, "Contacting API...");
             APIResult = API.getStuff(msg[1], Main.Endpoint);
             if (APIResult[0].equals("error")) {
                 event.getChannel().sendMessage("There was an Error while checking your linked Discord, please try again later! (API probably down)").queue();
+                logger.log(Level.SEVERE, "Error while contacting API. Request for Username: %s", msg[1]);
                 return;
             }
         } catch (Exception e) {
             event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
+            logger.log(Level.SEVERE, "Error while contacting API. Request for Username: %s", msg[1]);
             return;
         }
 
@@ -53,7 +61,6 @@ public class Verify extends ListenerAdapter {
         System.out.println(Guild);
         int ErrorCount = 0;
         int Errors = 0;
-
 
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
@@ -91,12 +98,13 @@ public class Verify extends ListenerAdapter {
                             Rank = "MVP++";
                             break;
                     }
+
                     try {
                         if (!Rank.equals("null")) {
                             event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Rank, true).get(0)).queue();
                         }
                     } catch (Exception e) {
-                        event.getChannel().sendMessage("Looks like a rank role does not exist, please ask an Admin to add the following Role: `" + Rank + "`").queue();
+                        event.getChannel().sendMessage("Looks like a rank role does not exist, please ask a Staff Member to add the following Role: `" + Rank + "`").queue();
                     }
                 }
 
