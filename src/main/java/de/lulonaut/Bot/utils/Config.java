@@ -14,7 +14,7 @@ import java.util.Properties;
  * <h1>Config</h1>
  * This is a util Class that loads part of the Config on demand
  *
- * @see Main#loadConf()
+ * @see Conf
  * @see Config#getConf(String, Boolean)
  */
 

@@ -1,6 +1,6 @@
 package de.lulonaut.Bot.utils;
 
-import de.lulonaut.Bot.Main;
+
 import io.github.reflxction.hypixelapi.HypixelAPI;
 import io.github.reflxction.hypixelapi.player.HypixelPlayer;
 import io.github.reflxction.hypixelapi.player.SocialMediaType;
@@ -64,9 +64,9 @@ public class API {
 
         } else if (Endpoint.equals("hypixel")) {
             //establish API connection(s)
-            HypixelAPI API = HypixelAPI.create(Main.APIKey);
+            HypixelAPI API = HypixelAPI.create(Conf.APIKey);
             String UUID = Objects.requireNonNull(readJsonFromUrl("https://api.mojang.com/users/profiles/minecraft/" + name)).getString("id");
-            JSONObject guild = readJsonFromUrl("https://api.hypixel.net/guild?key=" + Main.APIKey + "&player=" + UUID);
+            JSONObject guild = readJsonFromUrl("https://api.hypixel.net/guild?key=" + Conf.APIKey + "&player=" + UUID);
 
             //get Discord
             HypixelPlayer player = API.getPlayer(name);

@@ -1,6 +1,6 @@
 package de.lulonaut.Bot.commands;
 
-import de.lulonaut.Bot.Main;
+import de.lulonaut.Bot.utils.Conf;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -12,9 +12,9 @@ public class Calculate extends ListenerAdapter {
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
 
-        if (msg[0].equalsIgnoreCase(Main.PREFIX + "calculate")) {
+        if (msg[0].equalsIgnoreCase(Conf.PREFIX + "calculate")) {
             if (msg.length != 4) {
-                event.getChannel().sendMessage("Missing Parameters! Usage: " + Main.PREFIX + " [add/sub] [first-num] [second-num]").queue();
+                event.getChannel().sendMessage("Missing Parameters! Usage: " + Conf.PREFIX + " [add/sub] [first-num] [second-num]").queue();
                 return;
             }
 

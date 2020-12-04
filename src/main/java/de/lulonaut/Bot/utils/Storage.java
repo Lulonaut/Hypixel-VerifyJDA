@@ -24,6 +24,29 @@ class Storage {
         System.out.println(myList.length);
     }
 
+    public static String[] HandleStuff(String Action, String GuildID, String UserID) {
+
+        switch (Action) {
+            case "add":
+                //add one message
+                break;
+            case "remove":
+                //remove one message
+                break;
+            case "top10":
+                //Top10 for GuildID
+                break;
+            case "lookup":
+                //Check Message for UserID and GuildID
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + Action);
+        }
+
+
+        return new String[]{"returnSomething"};
+    }
+
     public static int readJSON(String GuildID, String UserID) {
         JSONParser jsonParser = new JSONParser();
         try {

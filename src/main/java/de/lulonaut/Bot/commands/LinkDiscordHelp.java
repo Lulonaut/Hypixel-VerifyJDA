@@ -1,6 +1,6 @@
 package de.lulonaut.Bot.commands;
 
-import de.lulonaut.Bot.Main;
+import de.lulonaut.Bot.utils.Conf;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,7 @@ public class LinkDiscordHelp extends ListenerAdapter {
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
-        if (msg[0].equalsIgnoreCase(Main.PREFIX + "linkdc")) {
+        if (msg[0].equalsIgnoreCase(Conf.PREFIX + "linkdc")) {
             event.getChannel().sendMessage(
                     "1.Go to /lobby on Hypixel\n" +
                             "2.Click on your Head (second Slot)\n" +
