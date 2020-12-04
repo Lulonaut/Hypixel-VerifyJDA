@@ -1,7 +1,8 @@
 package de.lulonaut.Bot.commands;
 
-import de.lulonaut.Bot.Main;
 import de.lulonaut.Bot.utils.API;
+import de.lulonaut.Bot.utils.Config;
+import de.lulonaut.Bot.utils.Conf;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,46 +11,51 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Logger.getLogger;
+
 /**
  * <h1>Verify Command</h1>
  * This Command takes a Username and then checks their Linked Discord on Hypixel.
  * If it matches their Discord Tag they get a role and some other stuff happens depending on the Config
  *
- * @see de.lulonaut.Bot.utils.Config
+ * @see Config
  */
 
 public class Verify extends ListenerAdapter {
-    Logger logger = Logger.getLogger("logger");
+    private static final Logger logger = getLogger(Verify.class.getName());
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        //set logging level
+        getLogger("").setLevel(Level.FINE);
+        getLogger("").getHandlers()[0].setLevel(Level.FINE);
+
+
+        logger.log(FINE, "Message!");
         //Checking if it's the actual command:
         String[] msg = event.getMessage().getContentRaw().split(" ");
         String[] APIResult;
         String UserDiscord = Objects.requireNonNull(event.getMember()).getUser().getAsTag();
 
-        if (!msg[0].equalsIgnoreCase(Main.PREFIX + "verify")) {
+        if (!msg[0].equalsIgnoreCase(Conf.PREFIX + "verify")) {
             return;
         }
         //Checking correct usage
         if (msg.length != 2) {
-            event.getChannel().sendMessage("Usage: " + Main.PREFIX + "verify [Minecraft IGN]").queue();
+            event.getChannel().sendMessage("Usage: " + Conf.PREFIX + "verify [Minecraft IGN]").queue();
             return;
         }
 
-        logger.log(Level.FINE, "Verify Command is now being executed for Discord User: %s", UserDiscord);
         //Command logic
         try {
             //Getting the linked Discord + Error handling
-            logger.log(Level.FINE, "Contacting API...");
-            APIResult = API.getStuff(msg[1], Main.Endpoint);
+            APIResult = API.getStuff(msg[1], Conf.Endpoint);
             if (APIResult[0].equals("error")) {
                 event.getChannel().sendMessage("There was an Error while checking your linked Discord, please try again later! (API probably down)").queue();
-                logger.log(Level.SEVERE, "Error while contacting API. Request for Username: %s", msg[1]);
                 return;
             }
         } catch (Exception e) {
             event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
-            logger.log(Level.SEVERE, "Error while contacting API. Request for Username: %s", msg[1]);
             return;
         }
 
@@ -65,7 +71,7 @@ public class Verify extends ListenerAdapter {
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
             //TODO add Command linkdc
-            event.getChannel().sendMessage("Looks you didn't link a Discord yet. // If you don't know how to add one please type '" + Main.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
+            event.getChannel().sendMessage("Looks you didn't link a Discord yet. If you don't know how to add one please type '" + Conf.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
         //Case : Discord doesn't match
@@ -77,16 +83,16 @@ public class Verify extends ListenerAdapter {
         else {
             try {
                 //Add Role(s)
-                event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Main.VerifyRole, false).get(0)).queue();
-                if (!(Main.OptionalRole == null)) {
-                    event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Main.OptionalRole, false).get(0)).queue();
+                event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Conf.VerifyRole, false).get(0)).queue();
+                if (!(Conf.OptionalRole == null)) {
+                    event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Conf.OptionalRole, false).get(0)).queue();
                 }
 
                 //Change Nickname
                 event.getMember().modifyNickname(Nickname).queue();
 
                 //Add Role for Rank if enabled
-                if (Main.RankRoles) {
+                if (Conf.RankRoles) {
                     switch (Rank) {
                         case "VIP_PLUS":
                             Rank = "VIP+";
@@ -108,7 +114,7 @@ public class Verify extends ListenerAdapter {
                     }
                 }
 
-                //if (Main.GuildRoles && Guild.equals(Main.Guild)) {
+                //if (LoadConf.GuildRoles && Guild.equals(LoadConf.Guild)) {
                 //
                 //}
 
