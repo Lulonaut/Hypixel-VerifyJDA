@@ -12,38 +12,44 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-
+        <!-- JDA Discord API stuff !-->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
             <version>4.2.0_217</version>
         </dependency>
+        <!-- Plugin to build to Jar!-->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.8.1</version>
         </dependency>
+        <!-- Prevents spamming Console at startup !-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.12</version>
         </dependency>
+        <!-- JSON Library for storing Data !-->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20180130</version>
         </dependency>
+        <!-- Hypixel API wrapper!-->
         <dependency>
             <groupId>com.github.ReflxctionDev</groupId>
             <artifactId>SimpleHypixelAPI</artifactId>
             <version>8eff50e</version>
         </dependency>
+        <!-- JSON Library for storing Data!-->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
         <dependency>
+            <!-- Array Utils and some more!-->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
