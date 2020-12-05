@@ -1,6 +1,5 @@
 package de.lulonaut.Bot.utils;
 
-import de.lulonaut.Bot.Main;
 import de.lulonaut.Bot.errors.ConfigException;
 import de.lulonaut.Bot.errors.ConfigNotFoundException;
 
@@ -24,7 +23,8 @@ public class Config {
      * <h1>Loads a part of the Config with the given String</h1>
      *
      * @param entry    (String) Entry in the file, eg: token
-     * @param optional (Boolean) If the entry is not needed to run the program, set to true. Non existent
+     * @param optional (Boolean) If the entry is not needed to run the program, set to true.
+     *                 Non existent values will be ignored when true
      * @return (String) Value of the config.
      * @throws IOException     On incorrect input
      * @throws ConfigException When optional is false but no entry is given or file doesn't exist
