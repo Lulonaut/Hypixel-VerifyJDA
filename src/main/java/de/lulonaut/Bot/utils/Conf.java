@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class Conf {
 
+    //All the variables loaded in the config
     public static String PREFIX;
     public static String VerifyRole;
     public static String OptionalRole;
@@ -17,6 +18,10 @@ public class Conf {
     public static String GuildRole = null;
     public static String Endpoint; // API Endpoint
     public static String APIKey; //Api Key for Hypixel API
+
+    /**
+     * Util Function that loads all the Config values to the variables
+     */
 
     public static void loadConf() throws IOException, AssertionError {
         try {
