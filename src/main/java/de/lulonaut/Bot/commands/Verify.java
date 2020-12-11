@@ -1,17 +1,15 @@
 package de.lulonaut.Bot.commands;
 
 import de.lulonaut.Bot.utils.API;
-import de.lulonaut.Bot.utils.Config;
 import de.lulonaut.Bot.utils.Conf;
+import de.lulonaut.Bot.utils.Config;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static java.util.logging.Level.FINE;
 import static java.util.logging.Logger.getLogger;
 
 /**
@@ -23,15 +21,13 @@ import static java.util.logging.Logger.getLogger;
  */
 
 public class Verify extends ListenerAdapter {
-    private static final Logger logger = getLogger(Verify.class.getName());
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         //set logging level
-        getLogger("").setLevel(Level.FINE);
-        getLogger("").getHandlers()[0].setLevel(Level.FINE);
+        getLogger("").setLevel(Level.INFO);
+        getLogger("").getHandlers()[0].setLevel(Level.INFO);
 
 
-        logger.log(FINE, "Message!");
         //Checking if it's the actual command:
         String[] msg = event.getMessage().getContentRaw().split(" ");
         String[] APIResult;
@@ -55,11 +51,10 @@ public class Verify extends ListenerAdapter {
                 return;
             }
         } catch (Exception e) {
-            event.getChannel().sendMessage("Some error occurred, maybe the API is down. Please try again later").queue();
+            event.getChannel().sendMessage("Some error occurred, API is probably down. Please try again later").queue();
             return;
         }
-
-        //Discord obtained, checking if it matches their Discord
+        // Discord obtained, checking if it matches their Discord
         String Discord = APIResult[0];
         String Nickname = APIResult[1];
         String Rank = APIResult[2];
@@ -70,7 +65,6 @@ public class Verify extends ListenerAdapter {
 
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
-            //TODO add Command linkdc
             event.getChannel().sendMessage("Looks you didn't link a Discord yet. If you don't know how to add one please type '" + Conf.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
@@ -114,9 +108,13 @@ public class Verify extends ListenerAdapter {
                     }
                 }
 
-                //if (LoadConf.GuildRoles && Guild.equals(LoadConf.Guild)) {
-                //
-                //}
+                if (Conf.GuildRoles && Guild.equals(Conf.Guild)) {
+                    try {
+                        event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRolesByName(Conf.GuildRole, true).get(0)).queue();
+                    } catch (Exception e) {
+                        event.getChannel().sendMessage("Looks like a role called " + Conf.GuildRole + " doesn't exist. Please ask an Admin to add it!").queue();
+                    }
+                }
 
             } catch (HierarchyException e) {
                 ErrorCount++;
