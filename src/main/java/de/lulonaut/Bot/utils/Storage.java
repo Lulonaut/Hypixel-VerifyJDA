@@ -3,7 +3,6 @@ package de.lulonaut.Bot.utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONException;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -19,55 +18,44 @@ import static java.lang.Integer.parseInt;
 
 class Storage {
 
-    public static void main(String[] args) {
-        String[] myList = sort("myGuildID");
-        System.out.println(myList.length);
+    public static void main(String[] args) throws IOException, ParseException {
+//        String[] sorted = HandleStuff("top10", "myGuildID", null);
+//        for (String s : sorted) System.out.println(s);
+//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
+//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
+//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
+//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#2750");
+        HandleStuff("lookup", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
+
+        System.out.println(HandleStuff("lookup", "InAnotherWorldWithMyGuild", "Lulonaut#3350")[0]);
+
+
+
     }
 
-    public static String[] HandleStuff(String Action, String GuildID, String UserID) {
+
+    public static String[] HandleStuff(String Action, String GuildID, String UserID) throws IOException, ParseException {
 
         switch (Action) {
             case "add":
-                //add one message
+                messagesJSON(GuildID, UserID, true);
                 break;
             case "remove":
                 //remove one message
+                messagesJSON(GuildID, UserID, false);
                 break;
             case "top10":
                 //Top10 for GuildID
-                break;
+                return sort(GuildID);
             case "lookup":
                 //Check Message for UserID and GuildID
-                break;
+                return lookup(GuildID, UserID);
             default:
                 throw new IllegalStateException("Unexpected value: " + Action);
         }
-
-
-        return new String[]{"returnSomething"};
+        return null;
     }
 
-    public static int readJSON(String GuildID, String UserID) {
-        JSONParser jsonParser = new JSONParser();
-        try {
-            //Parsing the contents of the JSON file
-            FileReader reader = new FileReader("test.json");
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
-
-
-            JSONObject messages = (JSONObject) jsonObject.get("messages");
-//            System.out.println(messages);
-
-            JSONObject firstGuild = (JSONObject) messages.get(GuildID);
-            reader.close();
-            return Integer.parseInt(String.valueOf(firstGuild.get(UserID)));
-
-
-        } catch (ParseException | IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
 
     public static void messagesJSON(String GuildID, String UserID, boolean addOrRemove) throws IOException, ParseException {
         //TODO remove or add one message
@@ -77,14 +65,27 @@ class Storage {
 
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(reader);
         reader.close();
+        JSONObject messages;
         try {
-            JSONObject messages = (JSONObject) jsonObject.get("messages");
+            try {
+                messages = (JSONObject) jsonObject.get("messages");
+            } catch (Exception e) {
+                JSONObject messagesEmpty = new JSONObject();
+                jsonObject.put("messages", messagesEmpty);
+                messages = (JSONObject) jsonObject.get("messages");
+            }
+
+            if (messages == null) {
+                JSONObject messagesEmpty = new JSONObject();
+                jsonObject.put("messages", messagesEmpty);
+                messages = (JSONObject) jsonObject.get("messages");
+            }
+
             JSONObject guildMessages = (JSONObject) messages.get(GuildID);
             if (guildMessages == null) {
                 JSONObject newGuild = new JSONObject();
                 newGuild.put(UserID, 0);
                 messages.put(GuildID, newGuild);
-                System.out.println(messages);
 
                 PrintWriter printWriter = new PrintWriter("test.json");
                 printWriter.write(String.valueOf(jsonObject));
@@ -92,10 +93,9 @@ class Storage {
                 printWriter.close();
 
             } else {
-                System.out.println("else");
                 try {
-                    String current = String.valueOf(guildMessages.get(UserID));
-                    int currentmsg = parseInt(String.valueOf(guildMessages.get(UserID)));
+                    String.valueOf(guildMessages.get(UserID));
+                    parseInt(String.valueOf(guildMessages.get(UserID)));
                 } catch (NullPointerException | NumberFormatException e) {
                     System.out.println("null pointer or null, setting to 0");
                     guildMessages.put(UserID, 0);
@@ -107,7 +107,6 @@ class Storage {
                     currentmsg--;
                 }
 
-                System.out.println("current:" + currentmsg);
 
                 guildMessages.put(UserID, currentmsg);
 
@@ -118,26 +117,10 @@ class Storage {
                 printWriter.close();
             }
 
-            System.out.println(guildMessages);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static JSONArray Jsonarray(String GuildID) throws IOException, ParseException {
-        JSONParser jsonParser = new JSONParser();
-
-        FileReader reader = new FileReader("test.json");
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
-        JSONObject messages = (JSONObject) jsonObject.get("messages");
-        JSONObject guild = (JSONObject) messages.get(GuildID);
-
-        JSONArray array = new JSONArray();
-        array.add(guild);
-        reader.close();
-        return array;
-
     }
 
     public static String[] sort(String GuildID) {
@@ -171,14 +154,51 @@ class Storage {
             reader.close();
             return sortedUsers;
 
-        } catch (JSONException | IOException e) {
+        } catch (JSONException e) {
+            return new String[]{"0"};
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-}
+    public static String[] lookup(String GuildID, String UserID) throws IOException, ParseException {
 
+        FileReader reader = new FileReader("test.json");
+
+        JSONObject jsonObject = (JSONObject) new JSONParser().parse(reader);
+        reader.close();
+        JSONObject messages;
+        try {
+            try {
+                messages = (JSONObject) jsonObject.get("messages");
+            } catch (Exception e) {
+                JSONObject messagesEmpty = new JSONObject();
+                jsonObject.put("messages", messagesEmpty);
+                messages = (JSONObject) jsonObject.get("messages");
+            }
+
+            if (messages == null) {
+                JSONObject messagesEmpty = new JSONObject();
+                jsonObject.put("messages", messagesEmpty);
+                messages = (JSONObject) jsonObject.get("messages");
+            }
+
+            JSONObject guildMessages = (JSONObject) messages.get(GuildID);
+            if (guildMessages == null) {
+                return new String[]{"0"};
+            }
+
+            return new String[]{String.valueOf(guildMessages.get(UserID))};
+
+        } catch (JSONException | NullPointerException e) {
+            return new String[]{"0"};
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new String[]{"0"};
+    }
+}
 
 class User {
     String UserID;
