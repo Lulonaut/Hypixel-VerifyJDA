@@ -7,9 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,21 +16,12 @@ import static java.lang.Integer.parseInt;
 
 class Storage {
 
+    private static final File file = new File("test.json");
+
     public static void main(String[] args) throws IOException, ParseException {
-//        String[] sorted = HandleStuff("top10", "myGuildID", null);
-//        for (String s : sorted) System.out.println(s);
-//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
-//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
-//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
-//        HandleStuff("add", "InAnotherWorldWithMyGuild", "Lulonaut#2750");
-        HandleStuff("lookup", "InAnotherWorldWithMyGuild", "Lulonaut#3350");
-
-        System.out.println(HandleStuff("lookup", "InAnotherWorldWithMyGuild", "Lulonaut#3350")[0]);
-
-
-
+//        HandleStuff("add", "myGuild", "myUser");
+        Config(new String[]{"hello"}, "myGuild");
     }
-
 
     public static String[] HandleStuff(String Action, String GuildID, String UserID) throws IOException, ParseException {
 
@@ -56,12 +45,10 @@ class Storage {
         return null;
     }
 
-
     public static void messagesJSON(String GuildID, String UserID, boolean addOrRemove) throws IOException, ParseException {
-        //TODO remove or add one message
 
         //read current state
-        FileReader reader = new FileReader("test.json");
+        FileReader reader = new FileReader(file);
 
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(reader);
         reader.close();
@@ -198,7 +185,39 @@ class Storage {
         }
         return new String[]{"0"};
     }
+
+    public static void Config(String[] ConfigStuff, String GuildID) throws IOException, ParseException {
+        JSONObject newObject = new JSONObject();
+        JSONObject newConfigObject = new JSONObject();
+        JSONObject currentGuildConfigObject;
+        //current State
+        FileReader reader = new FileReader(file);
+        JSONObject jso = (JSONObject) new JSONParser().parse(reader);
+        reader.close();
+
+        JSONObject configObject = (JSONObject) jso.get("config");
+
+        //Create if it is not there
+        if (configObject == null) {
+            jso.put("config", newObject);
+            configObject = (JSONObject) jso.get("config");
+        }
+
+        currentGuildConfigObject = (JSONObject) configObject.get(GuildID);
+        if (currentGuildConfigObject == null) {
+            configObject.put(GuildID, newConfigObject);
+        }
+
+
+//        write Changes
+        FileWriter writer = new FileWriter("test.json");
+        writer.write(String.valueOf(jso));
+        writer.flush();
+        writer.close();
+
+    }
 }
+
 
 class User {
     String UserID;
