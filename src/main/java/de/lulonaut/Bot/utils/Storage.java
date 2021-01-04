@@ -189,6 +189,7 @@ class Storage {
     public static void Config(String[] ConfigStuff, String GuildID) throws IOException, ParseException {
         JSONObject newObject = new JSONObject();
         JSONObject newConfigObject = new JSONObject();
+
         JSONObject currentGuildConfigObject;
         //current State
         FileReader reader = new FileReader(file);
@@ -197,12 +198,12 @@ class Storage {
 
         JSONObject configObject = (JSONObject) jso.get("config");
 
-        //Create if it is not there
+        //Create config object if it does not exist
         if (configObject == null) {
             jso.put("config", newObject);
             configObject = (JSONObject) jso.get("config");
         }
-
+        //Create subObject for guild config if it does not exist
         currentGuildConfigObject = (JSONObject) configObject.get(GuildID);
         if (currentGuildConfigObject == null) {
             configObject.put(GuildID, newConfigObject);
