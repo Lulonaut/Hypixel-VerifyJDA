@@ -2,13 +2,15 @@ package de.lulonaut.Bot;
 
 import de.lulonaut.Bot.commands.Calculate;
 import de.lulonaut.Bot.commands.LinkDiscordHelp;
+import de.lulonaut.Bot.commands.MessageLeaderboard;
 import de.lulonaut.Bot.commands.Verify;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
-import de.lulonaut.Bot.utils.Config;
 import de.lulonaut.Bot.utils.Conf;
+import de.lulonaut.Bot.utils.Config;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -22,7 +24,9 @@ public class Main {
     static {
         try {
             //start bot with token
-            jda = JDABuilder.createDefault(Config.getConf("token", false)).build();
+            jda = JDABuilder.createDefault(Config.getConf("token", false))
+                    .setActivity(Activity.playing("https://github.com/Lulonaut/Hypixel-VerifyJDA"))
+                    .build();
         } catch (LoginException e) {
             System.out.println("The Token is invalid! Please check your config.");
             System.exit(1);
@@ -55,5 +59,6 @@ public class Main {
         jda.addEventListener(new Calculate());
         jda.addEventListener(new Verify());
         jda.addEventListener(new LinkDiscordHelp());
+        jda.addEventListener(new MessageLeaderboard());
     }
 }
