@@ -28,7 +28,7 @@ public class Verify extends ListenerAdapter {
         getLogger("").getHandlers()[0].setLevel(Level.INFO);
 
 
-        //Checking if it's the actual command:
+        //Checking if it's the actual command
         String[] msg = event.getMessage().getContentRaw().split(" ");
         String[] APIResult;
         String UserDiscord = Objects.requireNonNull(event.getMember()).getUser().getAsTag();
@@ -47,11 +47,13 @@ public class Verify extends ListenerAdapter {
             //Getting the linked Discord + Error handling
             APIResult = API.getStuff(msg[1], Conf.Endpoint);
             if (APIResult[0].equals("error")) {
-                event.getChannel().sendMessage("There was an Error while checking your linked Discord, please try again later! (API probably down)").queue();
+                event.getChannel().sendMessage("There was an Error while checking your linked Discord, " +
+                        "please try again later! (API probably down)").queue();
                 return;
             }
         } catch (Exception e) {
-            event.getChannel().sendMessage("Some error occurred, API is probably down. Please try again later").queue();
+            event.getChannel().sendMessage("Some error occurred, " +
+                    "API is probably down. Please try again later").queue();
             return;
         }
         // Discord obtained, checking if it matches their Discord
@@ -65,12 +67,16 @@ public class Verify extends ListenerAdapter {
 
         //Case: Discord is null (not Linked anything)
         if (Discord.equals("null")) {
-            event.getChannel().sendMessage("Looks you didn't link a Discord yet. If you don't know how to add one please type '" + Conf.PREFIX + "linkdc'. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
+            event.getChannel().sendMessage("Looks you didn't link a Discord yet. If you don't know how to " +
+                    "add one please type '" + Conf.PREFIX + "linkdc'. If you just changed this please wait a few " +
+                    "minutes and try again. (Spamming it won't do anything)").queue();
         }
 
         //Case : Discord doesn't match
         else if (!UserDiscord.equals(Discord)) {
-            event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But a wise man told me you linked this Discord in Minecraft: `" + Discord + "`. If you just changed this please wait a few minutes and try again. (Spamming it won't do anything)").queue();
+            event.getChannel().sendMessage("Your Discord Tag is: `" + UserDiscord + "`. But a wise man told me " +
+                    "you linked this Discord in Minecraft: `" + Discord + "`. If you just changed this please wait a " +
+                    "few minutes and try again. (Spamming it won't do anything)").queue();
         }
 
         //Case : Discord does match
@@ -129,7 +135,7 @@ public class Verify extends ListenerAdapter {
             } else if (Errors > 0) {
                 event.getChannel().sendMessage("Some internal error happened, please contact a Admin :(").queue();
             } else {
-                event.getChannel().sendMessage("I added a Role, changed your Nickname etc.").queue();
+                event.getChannel().sendMessage("You now have the " + Conf.VerifyRole + " Role. (and maybe some more)").queue();
             }
         }
     }
