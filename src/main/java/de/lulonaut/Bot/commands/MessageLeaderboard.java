@@ -16,13 +16,17 @@ public class MessageLeaderboard extends ListenerAdapter {
             .map(Enum::name)
             .collect(Collectors.toList());
 
-
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
-        if (!aliases.contains(msg[0].substring(1))) {
+        try {
+            if (!aliases.contains(msg[0].substring(1))) {
+                return;
+            }
+        } catch (Exception e) {
             return;
         }
+
 
         LinkedList<String> users = new LinkedList<>();
         LinkedList<Integer> messages = new LinkedList<>();
@@ -50,14 +54,11 @@ public class MessageLeaderboard extends ListenerAdapter {
             lb.append("\n");
         }
 
-
         EmbedBuilder eb = new EmbedBuilder()
                 .setTitle("Current Leaderboard for " + event.getGuild().getName(), null)
-                .setDescription(lb);
-        try {
-            event.getChannel().sendMessage(eb.build()).queue();
-        } catch (StringIndexOutOfBoundsException e) {
-            System.out.println("this is caught!!!");
-        }
+                .setDescription(lb.toString());
+
+        event.getChannel().sendMessage(eb.build()).queue();
+
     }
 }
