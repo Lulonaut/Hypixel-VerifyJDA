@@ -17,7 +17,6 @@ public class Database {
      * @param UserID  ID of the user
      */
     public static void addMessage(String GuildID, String UserID) {
-        //on message
         j.hincrBy("messages:" + GuildID, UserID, 1);
     }
 
