@@ -2,7 +2,7 @@ package de.lulonaut.Bot.commands;
 
 public class Aliases {
 
-    enum LeaderboardAliases {
+    public enum LeaderboardAliases {
         Leaderboard,
         leaderboard,
         top10,
@@ -10,10 +10,14 @@ public class Aliases {
         topmessages
     }
 
-    enum LookupUserAliases{
+    public enum LookupUserAliases{
         check,
         lookup,
         checkuser,
         checkmsg,
+    }
+
+    public enum DeleteMessagesAliases{
+        deleteMessages
     }
 }

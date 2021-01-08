@@ -1,6 +1,7 @@
-package de.lulonaut.Bot.commands;
+package de.lulonaut.Bot.commands.messagecount;
 
 import de.lulonaut.Bot.Main;
+import de.lulonaut.Bot.commands.Aliases;
 import de.lulonaut.Bot.utils.Database;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -16,6 +17,7 @@ public class LookupUser extends ListenerAdapter {
             .map(Enum::name)
             .collect(Collectors.toList());
 
+    @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
@@ -44,7 +46,7 @@ public class LookupUser extends ListenerAdapter {
                 Objects.requireNonNull(Main.jda.getUserById(UserID)).getName();
             } catch (NullPointerException e) {
                 eb.setTitle("Error!");
-                eb.setDescription("That user doesnt exist! Please @ them or use their UserID as the parameter.");
+                eb.setDescription("That user doesnt exist or didn't send any messages yet.\nPlease @ them or use their UserID as the parameter.");
                 event.getChannel().sendMessage(eb.build()).queue();
                 return;
             }

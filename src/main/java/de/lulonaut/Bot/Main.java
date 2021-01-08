@@ -1,6 +1,11 @@
 package de.lulonaut.Bot;
 
-import de.lulonaut.Bot.commands.*;
+import de.lulonaut.Bot.commands.Calculate;
+import de.lulonaut.Bot.commands.LinkDiscordHelp;
+import de.lulonaut.Bot.commands.Verify;
+import de.lulonaut.Bot.commands.messagecount.DeleteAllMessages;
+import de.lulonaut.Bot.commands.messagecount.LookupUser;
+import de.lulonaut.Bot.commands.messagecount.MessageLeaderboard;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
 import de.lulonaut.Bot.utils.Conf;
@@ -18,7 +23,15 @@ public class Main {
 
     public static JDA jda;
 
-    static {
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        TimeUnit.SECONDS.sleep(2);
+        Conf.loadConf();
+        System.out.println("Prefix from Config set to: " + Conf.PREFIX);
+        if (Conf.RankRoles) {
+            System.out.println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++. Otherwise there will be constant Errors");
+        }
+        System.out.println("Config loaded.");
         try {
             //start bot with token
             jda = JDABuilder.createDefault(Config.getConf("token", false))
@@ -29,18 +42,9 @@ public class Main {
             System.exit(1);
         } catch (Exception e) {
             System.out.println("There was an error while logging in, please try again and check your config!");
+            e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        TimeUnit.SECONDS.sleep(2);
-        Conf.loadConf();
-        System.out.println("Prefix from Config set to: " + Conf.PREFIX);
-        if (Conf.RankRoles) {
-            System.out.println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++. Otherwise there will be constant Errors");
-        }
-        System.out.println("Config loaded.");
         registerEvents();
         System.out.println("All Events registered!");
         registerCommands();
@@ -58,5 +62,6 @@ public class Main {
         jda.addEventListener(new LinkDiscordHelp());
         jda.addEventListener(new MessageLeaderboard());
         jda.addEventListener(new LookupUser());
+        jda.addEventListener(new DeleteAllMessages());
     }
 }

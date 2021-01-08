@@ -1,5 +1,6 @@
-package de.lulonaut.Bot.commands;
+package de.lulonaut.Bot.commands.messagecount;
 
+import de.lulonaut.Bot.commands.Aliases;
 import de.lulonaut.Bot.utils.Database;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -16,6 +17,7 @@ public class MessageLeaderboard extends ListenerAdapter {
             .map(Enum::name)
             .collect(Collectors.toList());
 
+    @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
