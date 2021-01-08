@@ -9,4 +9,11 @@ public class Aliases {
         topMessages,
         topmessages
     }
+
+    enum LookupUserAliases{
+        check,
+        lookup,
+        checkuser,
+        checkmsg,
+    }
 }

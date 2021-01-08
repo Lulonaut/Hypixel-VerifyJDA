@@ -1,9 +1,6 @@
 package de.lulonaut.Bot;
 
-import de.lulonaut.Bot.commands.Calculate;
-import de.lulonaut.Bot.commands.LinkDiscordHelp;
-import de.lulonaut.Bot.commands.MessageLeaderboard;
-import de.lulonaut.Bot.commands.Verify;
+import de.lulonaut.Bot.commands.*;
 import de.lulonaut.Bot.listeners.CategoryCreateListener;
 import de.lulonaut.Bot.listeners.MessageListener;
 import de.lulonaut.Bot.utils.Conf;
@@ -60,5 +57,6 @@ public class Main {
         jda.addEventListener(new Verify());
         jda.addEventListener(new LinkDiscordHelp());
         jda.addEventListener(new MessageLeaderboard());
+        jda.addEventListener(new LookupUser());
     }
 }
