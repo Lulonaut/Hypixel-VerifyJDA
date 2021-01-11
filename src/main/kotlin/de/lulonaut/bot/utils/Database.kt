@@ -1,12 +1,10 @@
 package de.lulonaut.bot.utils
 
 import redis.clients.jedis.Jedis
-import java.util.HashMap
-import java.util.LinkedHashMap
-import java.util.Comparator
+import java.util.*
 
 object Database {
-    var j = Jedis("localhost")
+    private var j = Jedis("localhost")
 
     /**
      * Adds a message to the database

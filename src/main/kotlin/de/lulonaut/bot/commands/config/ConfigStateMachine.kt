@@ -1,32 +1,31 @@
 package de.lulonaut.bot.commands.config
 
-import java.lang.Exception
+import de.lulonaut.bot.utils.Cache
 import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Database
-import java.util.HashMap
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import de.lulonaut.bot.utils.GetGuild
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import de.lulonaut.bot.utils.GetGuild
-import de.lulonaut.bot.utils.Cache
-import net.dv8tion.jda.api.entities.Member
-import java.lang.StringBuilder
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.util.*
 
 class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEvent, member: Member?) :
     ListenerAdapter() {
-    private val channelID: Long
-    private val userID: Long
+    private val channelID: Long = channel.idLong
+    private val userID: Long = member!!.idLong
     private val options: MutableMap<String, String?> = HashMap()
     var done: Boolean
     private val initEvent: GuildMessageReceivedEvent
-    private var currentStep: Int
+    private var currentStep: Int = 1
     private var inProgress = false
+
+
     private fun showCurrentConfig(): String {
         val sb = StringBuilder()
-        val count: String
-        count = if (options["counting"] == "true") {
+        val count: String = if (options["counting"] == "true") {
             "enabled"
         } else {
             "disabled"
@@ -46,27 +45,23 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         if (gmRole) {
             sb.append("Guild Name: `").append(options["guildID"]).append("`")
         }
+        sb.append("Command prefix: `").append(options["prefix"]).append("`")
         return sb.toString()
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        println("event...")
         if (event.author.isBot || event.channel.idLong != channelID || event.author.idLong != userID) {
-            println("return1")
             return
         }
         if (event.message.contentRaw.equals("cancel", ignoreCase = true) && !inProgress) {
             event.channel.sendMessage("setup cancelled.").queue()
             event.jda.removeEventListener(this)
-            println("return2")
             return
         }
         if (event.message.contentRaw.equals("continue", ignoreCase = true) && !inProgress) {
-            println("continue")
             currentStep++
         }
         if (event.message.contentRaw.equals("exit", ignoreCase = true) && !inProgress) {
-            println(options)
             Database.saveConfig(event.guild.id, options)
             //TODO: Write changes to Database (new method for saving and getting current config)
             event.channel.sendMessage(
@@ -76,10 +71,8 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
     """.trimIndent()
             ).queue()
             event.jda.removeEventListener(this)
-            println("return3")
             return
         }
-        println("switch with $currentStep")
         when (currentStep) {
             1 ->                 //verify role
                 if (inProgress) {
@@ -102,29 +95,33 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 }
             2 ->                 //message counting
                 if (inProgress) {
-                    if (event.message.contentRaw.equals("enabled", ignoreCase = true)) {
-                        options["counting"] = "true"
-                        event.channel.sendMessage(
-                            """OK: Message counting system is now enabled.
-With it come some commands:
-${Conf.PREFIX}`leaderboard`: shows the current leaderboard of users with the most messages
-${Conf.PREFIX}`check <user>`: shows how many messages you or a given user currently have
-${Conf.PREFIX}`deleteMessages`: this command requires the "Manage Server" Permission and clears the current message counter for everyone in the server. (further confirmation is required)
-
-Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."""
-                        ).queue()
-                        inProgress = false
-                    } else if (event.message.contentRaw.equals("disabled", ignoreCase = true)) {
-                        options["counting"] = "false"
-                        event.channel.sendMessage(
-                            """
-    OK: Message counting system is now disabled.
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
-    """.trimIndent()
-                        ).queue()
-                        inProgress = false
-                    } else {
-                        event.channel.sendMessage("Invalid input, please type `enabled` or `disabled`.").queue()
+                    when {
+                        event.message.contentRaw.equals("enabled", ignoreCase = true) -> {
+                            options["counting"] = "true"
+                            event.channel.sendMessage(
+                                """OK: Message counting system is now enabled.
+    With it come some commands:
+    ${Conf.PREFIX}`leaderboard`: shows the current leaderboard of users with the most messages
+    ${Conf.PREFIX}`check <user>`: shows how many messages you or a given user currently have
+    ${Conf.PREFIX}`deleteMessages`: this command requires the "Manage Server" Permission and clears the current message counter for everyone in the server. (further confirmation is required)
+                
+    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."""
+                            ).queue()
+                            inProgress = false
+                        }
+                        event.message.contentRaw.equals("disabled", ignoreCase = true) -> {
+                            options["counting"] = "false"
+                            event.channel.sendMessage(
+                                """
+                    OK: Message counting system is now disabled.
+                    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+                    """.trimIndent()
+                            ).queue()
+                            inProgress = false
+                        }
+                        else -> {
+                            event.channel.sendMessage("Invalid input, please type `enabled` or `disabled`.").queue()
+                        }
                     }
                 } else {
                     event.channel.sendMessage(
@@ -137,29 +134,33 @@ Please type `continue` to continue with the setup, `exit` to save the config and
                 }
             3 ->                 //guild member role toggle
                 if (inProgress) {
-                    if (event.message.contentRaw.equals("enabled", ignoreCase = true)) {
-                        options["guildMemberRole"] = "true"
-                        event.channel.sendMessage(
-                            """
-    OK: guild member role enabled. In the next step you will have to set a guild name. If you skip this step the feature will not work.
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
-    """.trimIndent()
-                        ).queue()
-                        inProgress = false
-                        return
-                    } else if (event.message.contentRaw.equals("disabled", ignoreCase = true)) {
-                        options["guildMemberRole"] = "false"
-                        event.channel.sendMessage(
-                            """
-    OK: guild member role disabled.
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
-    """.trimIndent()
-                        ).queue()
-                        currentStep++
-                        inProgress = false
-                        return
-                    } else {
-                        event.channel.sendMessage("Invalid input, please type `enabled` or `disabled`.").queue()
+                    when {
+                        event.message.contentRaw.equals("enabled", ignoreCase = true) -> {
+                            options["guildMemberRole"] = "true"
+                            event.channel.sendMessage(
+                                """
+                    OK: guild member role enabled. In the next step you will have to set a guild name. If you skip this step the feature will not work.
+                    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+                    """.trimIndent()
+                            ).queue()
+                            inProgress = false
+                            return
+                        }
+                        event.message.contentRaw.equals("disabled", ignoreCase = true) -> {
+                            options["guildMemberRole"] = "false"
+                            event.channel.sendMessage(
+                                """
+                    OK: guild member role disabled.
+                    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+                    """.trimIndent()
+                            ).queue()
+                            currentStep++
+                            inProgress = false
+                            return
+                        }
+                        else -> {
+                            event.channel.sendMessage("Invalid input, please type `enabled` or `disabled`.").queue()
+                        }
                     }
                 } else {
                     event.channel.sendMessage(
@@ -210,6 +211,25 @@ Please type `continue` to continue with the setup, `exit` to save the config and
                     inProgress = true
                 }
             5 -> {
+                if (inProgress) {
+                    options["prefix"] = event.message.contentRaw
+                    event.channel.sendMessage(
+                        "OK: Prefix is now set to: `${event.message.contentRaw}`." +
+                                "Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."
+                    ).queue()
+                    inProgress = false
+                } else {
+                    println("asking for input")
+                    val currentPrefix = options["prefix"]
+                    event.channel.sendMessage(
+                        "Now please set a prefix to be used." +
+                                "The current Prefix is `$currentPrefix`\n"
+                    ).queue()
+                    inProgress = true
+                }
+                println("done!")
+            }
+            6 -> {
                 //final message
                 println(options)
                 Database.saveConfig(event.guild.id, options)
@@ -238,11 +258,7 @@ Please type `continue` to continue with the setup, `exit` to save the config and
     4: if 3: guild name (validated with MC name)
      */
     init {
-        println("starting")
         //        this.guildID = guild.getIdLong();
-        channelID = channel.idLong
-        userID = member!!.idLong
-        currentStep = 1
         done = false
         initEvent = event
         //default options
@@ -250,5 +266,6 @@ Please type `continue` to continue with the setup, `exit` to save the config and
         options["counting"] = "false"
         options["guildMemberRole"] = "false"
         options["guildID"] = ""
+        options["prefix"] = Conf.PREFIX
     }
 }
