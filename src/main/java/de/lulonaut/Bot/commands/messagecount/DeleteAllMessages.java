@@ -21,12 +21,10 @@ public class DeleteAllMessages extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] msg = event.getMessage().getContentRaw().split(" ");
-
-        try {
-            if (!aliases.contains(msg[0].substring(1))) {
-                return;
-            }
-        } catch (Exception e) {
+        if (event.getAuthor().isBot()) {
+            return;
+        }
+        if (!aliases.contains(msg[0].substring(1))) {
             return;
         }
 
@@ -34,13 +32,13 @@ public class DeleteAllMessages extends ListenerAdapter {
         EnumSet<Permission> perms = Objects.requireNonNull(event.getMember()).getPermissions();
         if (!perms.contains(Permission.MANAGE_SERVER)) {
             eb.setTitle("Error!");
-            eb.setDescription("To use this command you need to have the \"Manage Server\" permission!");
+            eb.setDescription("");
             event.getChannel().sendMessage(eb.build()).queue();
             return;
         }
         //user has perms
         event.getChannel().sendMessage("Please type \"confirm\" to reset the counter for this server. **THIS CANNOT BE UNDONE**").queue();
-        event.getJDA().addEventListener(new DeletingStateMachine(event.getChannel(), event.getMember().getUser()));
-
+        DeletingStateMachine dsm = new DeletingStateMachine(event.getChannel(), event.getMember().getUser());
+        event.getJDA().addEventListener(dsm);
     }
 }

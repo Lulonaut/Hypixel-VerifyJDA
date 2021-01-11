@@ -27,9 +27,8 @@ public class Database {
      * @param UserID  ID of the user
      */
     public static void removeMessage(String GuildID, String UserID) {
-        //on message deleted
-        //TODO: find a way to get UserID
-        j.hincrBy("messages:" + GuildID, UserID, -1);
+        //TODO: find a way to get UserID (not possible rn)
+        j.hincrBy("verifyBot:messages:" + GuildID, UserID, -1);
     }
 
     /**
@@ -41,7 +40,7 @@ public class Database {
      */
     public static long lookupUser(String GuildID, String UserID) {
         //if one user wants to know their messages
-        String lookup = j.hget("messages:" + GuildID, UserID);
+        String lookup = j.hget("verifyBot:messages:" + GuildID, UserID);
         if (lookup == null) {
             return 0L;
         } else {
@@ -78,6 +77,14 @@ public class Database {
      */
     public static void removeAllMessages(String GuildID) {
         //ask for confirmation before doing this
-        j.del("messages:" + GuildID);
+        j.del("verifyBot:messages:" + GuildID);
+    }
+
+    public static void saveConfig(String GuildID, Map<String, String> options) {
+        j.hset("verifyBot:config:" + GuildID, options);
+    }
+
+    public static Map<String, String> loadConfig(String GuildID) {
+        return j.hgetAll("verifyBot:config:" + GuildID);
     }
 }

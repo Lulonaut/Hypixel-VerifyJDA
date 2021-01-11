@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class DeletingStateMachine extends ListenerAdapter {
     private final long channelID, userID;
+    public boolean success = false;
     private int usages;
 
     public DeletingStateMachine(MessageChannel channel, User author) {
@@ -30,17 +31,20 @@ public class DeletingStateMachine extends ListenerAdapter {
 
         //actual logic
         if (!event.getMessage().getContentRaw().equalsIgnoreCase("confirm")) {
+            //the first time it fires is the command being executed, can't be "confirm"
             usages = usages + 1;
             if (usages == 1) {
                 return;
             }
             event.getChannel().sendMessage("Not resetting.").queue();
+            this.success = false;
         } else {
             Database.removeAllMessages(event.getGuild().getId());
             event.getChannel().sendMessage("Counter reset.").queue();
+            this.success = true;
         }
+        //remove event listener when its done
         event.getJDA().removeEventListener(this);
-
     }
 
 }

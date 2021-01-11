@@ -3,6 +3,7 @@ package de.lulonaut.Bot;
 import de.lulonaut.Bot.commands.Calculate;
 import de.lulonaut.Bot.commands.LinkDiscordHelp;
 import de.lulonaut.Bot.commands.Verify;
+import de.lulonaut.Bot.commands.config.ConfigCommand;
 import de.lulonaut.Bot.commands.messagecount.DeleteAllMessages;
 import de.lulonaut.Bot.commands.messagecount.LookupUser;
 import de.lulonaut.Bot.commands.messagecount.MessageLeaderboard;
@@ -63,5 +64,6 @@ public class Main {
         jda.addEventListener(new MessageLeaderboard());
         jda.addEventListener(new LookupUser());
         jda.addEventListener(new DeleteAllMessages());
+        jda.addEventListener(new ConfigCommand());
     }
 }

@@ -62,6 +62,12 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
+        <!--My own API Wrapper for the Hypixel API-->
+        <dependency>
+            <groupId>com.github.Lulonaut</groupId>
+            <artifactId>HypixelAPIWrapper</artifactId>
+            <version>d7e93b2f9c</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
