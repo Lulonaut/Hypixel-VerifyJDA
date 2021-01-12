@@ -70,7 +70,7 @@ object Database {
         j.del("verifyBot:messages:$GuildID")
     }
 
-    fun saveConfig(GuildID: String, options: Map<String, String?>?) {
+    fun saveConfig(GuildID: String, options: MutableMap<String?, String?>?) {
         j.hset("verifyBot:config:$GuildID", options)
     }
 

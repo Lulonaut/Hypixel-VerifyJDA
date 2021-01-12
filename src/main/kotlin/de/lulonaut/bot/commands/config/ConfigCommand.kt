@@ -1,17 +1,17 @@
 package de.lulonaut.bot.commands.config
 
+import de.lulonaut.bot.utils.Cache
 import de.lulonaut.bot.utils.Conf
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.EmbedBuilder
-import java.lang.Thread
-import java.lang.InterruptedException
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.*
 
 class ConfigCommand : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        if (event.author.isBot || !event.message.contentRaw.equals(Conf.PREFIX + "config", ignoreCase = true)) {
+        val prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (event.author.isBot || !event.message.contentRaw.equals(prefix + "config", ignoreCase = true)) {
             return
         } else {
             if (!Objects.requireNonNull(event.member)!!.permissions.contains(Permission.MANAGE_SERVER)) {
@@ -21,6 +21,7 @@ class ConfigCommand : ListenerAdapter() {
                 event.channel.sendMessage(eb.build()).queue()
                 return
             }
+            println(event.message.contentRaw)
             println("starting state machine")
             val csm = ConfigStateMachine(event.channel, event, event.member)
             event.jda.addEventListener(csm)
