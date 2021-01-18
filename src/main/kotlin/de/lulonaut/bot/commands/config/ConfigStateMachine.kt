@@ -51,7 +51,6 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         }
         if (event.message.contentRaw.equals("exit", ignoreCase = true) && !inProgress) {
             Database.saveConfig(event.guild.id, options)
-            //TODO: Write changes to Database (new method for saving and getting current config)
             val eb = EmbedBuilder()
             eb.setTitle("Setup exited")
             eb.setDescription(
