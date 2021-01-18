@@ -10,7 +10,7 @@ import java.util.*
 import java.util.stream.Stream
 
 class DeleteAllMessages : ListenerAdapter() {
-    var aliases = Stream.of(*DeleteMessagesAliases.values())
+    private var aliases: MutableList<String> = Stream.of(*DeleteMessagesAliases.values())
         .map { obj: DeleteMessagesAliases -> obj.name }
         .collect(Collectors.toList())
 

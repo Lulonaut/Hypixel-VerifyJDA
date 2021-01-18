@@ -71,15 +71,8 @@ class Verify : ListenerAdapter() {
             else -> {
                 try {
                     //Add Role(s)
-                    event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(Conf.VerifyRole!!, false)[0])
+                    event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(Conf.VerifyRole, false)[0])
                         .queue()
-                    if (Conf.OptionalRole != null) {
-                        event.guild.addRoleToMember(
-                            event.member!!,
-                            event.guild.getRolesByName(Conf.OptionalRole!!, false)[0]
-                        ).queue()
-                    }
-
                     //Change Nickname
                     event.member!!.modifyNickname(nickname).queue()
 
@@ -104,7 +97,7 @@ class Verify : ListenerAdapter() {
                         try {
                             event.guild.addRoleToMember(
                                 event.member!!,
-                                event.guild.getRolesByName(Conf.GuildRole!!, true)[0]
+                                event.guild.getRolesByName(Conf.GuildRole, true)[0]
                             ).queue()
                         } catch (e: Exception) {
                             event.channel.sendMessage("Looks like a role called " + Conf.GuildRole + " doesn't exist. Please ask an Admin to add it!")

@@ -12,7 +12,7 @@ import java.lang.StringBuilder
 import java.util.stream.Stream
 
 class MessageLeaderboard : ListenerAdapter() {
-    var aliases = Stream.of(*LeaderboardAliases.values())
+    private var aliases: MutableList<String> = Stream.of(*LeaderboardAliases.values())
         .map { obj: LeaderboardAliases -> obj.name }
         .collect(Collectors.toList())
 
@@ -28,7 +28,7 @@ class MessageLeaderboard : ListenerAdapter() {
         val users = LinkedList<String?>()
         val messages = LinkedList<Int?>()
         val leaderboard = Database.sort(event.guild.id)
-        for ((key, value) in leaderboard!!) {
+        for ((key, value) in leaderboard) {
             users.add(key)
             messages.add(value)
         }

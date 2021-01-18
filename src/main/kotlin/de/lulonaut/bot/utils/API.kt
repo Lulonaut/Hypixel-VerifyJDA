@@ -1,13 +1,10 @@
 package de.lulonaut.bot.utils
 
-import kotlin.Throws
-import java.lang.Exception
-import io.github.reflxction.hypixelapi.player.SocialMediaType
 import io.github.reflxction.hypixelapi.HypixelAPI
+import io.github.reflxction.hypixelapi.player.SocialMediaType
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
-import java.lang.StringBuilder
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -17,79 +14,83 @@ object API {
     fun getStuff(name: String, Endpoint: String?): Array<String?>? {
         val guildAPI: JSONObject?
         val playerAPI: JSONObject?
-        var Discord: String
-        val Nickname: String
-        val Rank: String
-        var Guild: String? = null
-        return if (Endpoint == "slothpixel") {
-            try {
-                guildAPI = readJsonFromUrl("https://api.slothpixel.me/api/guilds/$name")
-                playerAPI = readJsonFromUrl("https://api.slothpixel.me/api/players/$name")
-            } catch (e: IOException) {
-                return arrayOf("error")
+        val discord: String
+        val nickname: String
+        val rank: String
+        var guild: String? = null
+        return when (Endpoint) {
+            "slothpixel" -> {
+                try {
+                    guildAPI = readJsonFromUrl("https://api.slothpixel.me/api/guilds/$name")
+                    playerAPI = readJsonFromUrl("https://api.slothpixel.me/api/players/$name")
+                } catch (e: IOException) {
+                    return arrayOf("error")
+                }
+
+                //Error Handling
+                if (playerAPI == null) {
+                    return arrayOf("error")
+                } else if (guildAPI == null) {
+                    return arrayOf("error")
+                }
+                try {
+                    playerAPI.getString("error")
+                    guildAPI.getString("error")
+                    return arrayOf("error")
+                } catch (ignored: Exception) {
+                }
+
+                //Get linked Discord
+                val links = playerAPI.getJSONObject("links")
+                discord = links.getString("DISCORD")
+
+                //get Nickname
+                nickname = playerAPI.getString("username")
+
+                //get Rank
+                rank = playerAPI.getString("rank")
+
+                //get guild
+                try {
+                    guildAPI.getString("guild")
+                } catch (e: Exception) {
+                    guild = guildAPI.getString("name")
+                }
+                arrayOf(discord, nickname, rank, guild)
             }
+            "hypixel" -> {
+                //establish API connection(s)
+                val api = HypixelAPI.create(Conf.APIKey)
+                val uuid =
+                    Objects.requireNonNull(readJsonFromUrl("https://api.mojang.com/users/profiles/minecraft/$name"))!!
+                        .getString("id")
+                val guildObject =
+                    readJsonFromUrl("https://api.hypixel.net/guild?key=" + Conf.APIKey + "&player=" + uuid)
 
-            //Error Handling
-            if (playerAPI == null) {
-                return arrayOf("error")
-            } else if (guildAPI == null) {
-                return arrayOf("error")
+                //get Discord
+                val player = api.getPlayer(name)
+                discord = player.socialMedia.links[SocialMediaType.DISCORD].toString()
+                //set null to string
+
+                //get Nickname
+                nickname = player.displayName
+
+                //get Rank
+                rank = player.newPackageRank.toString()
+
+                //get Guild
+                println("UUID of $name : $uuid")
+                guild = try {
+                    assert(guildObject != null)
+                    guildObject!!.getJSONObject("guild").getString("name")
+                } catch (e: Exception) {
+                    guildObject!!["guild"].toString()
+                }
+                arrayOf(discord, nickname, rank, guild)
             }
-            try {
-                playerAPI.getString("error")
-                guildAPI.getString("error")
-                return arrayOf("error")
-            } catch (ignored: Exception) {
+            else -> {
+                null
             }
-
-            //Get linked Discord
-            val links = playerAPI.getJSONObject("links")
-            Discord = links.getString("DISCORD")
-
-            //get Nickname
-            Nickname = playerAPI.getString("username")
-
-            //get Rank
-            Rank = playerAPI.getString("rank")
-
-            //get Guild
-            try {
-                guildAPI.getString("guild")
-            } catch (e: Exception) {
-                Guild = guildAPI.getString("name")
-            }
-            arrayOf(Discord, Nickname, Rank, Guild)
-        } else if (Endpoint == "hypixel") {
-            //establish API connection(s)
-            val API = HypixelAPI.create(Conf.APIKey)
-            val UUID =
-                Objects.requireNonNull(readJsonFromUrl("https://api.mojang.com/users/profiles/minecraft/$name"))!!
-                    .getString("id")
-            val guild = readJsonFromUrl("https://api.hypixel.net/guild?key=" + Conf.APIKey + "&player=" + UUID)
-
-            //get Discord
-            val player = API.getPlayer(name)
-            Discord = player.socialMedia.links[SocialMediaType.DISCORD].toString()
-            //set null to string
-            Discord = Discord ?: "null"
-
-            //get Nickname
-            Nickname = player.displayName
-
-            //get Rank
-            Rank = player.newPackageRank.toString()
-
-            //get Guild
-            println("UUID of $name : $UUID")
-            Guild = try {
-                assert(guild != null)
-                guild!!.getJSONObject("guild").getString("name")
-            } catch (e: Exception) {
-                guild!!["guild"].toString()
-            }
-            arrayOf(Discord, Nickname, Rank, Guild)
-        } else {
-            null
         }
     }
 
