@@ -25,15 +25,15 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
     private fun showCurrentConfig(): String {
         val sb = StringBuilder()
 
-        val gmRole: Boolean = options?.get("guildMemberRole") == "true"
-        sb.append("Verified Role: `").append(options?.get("role")).append("`\n")
-        sb.append("Rank roles: `").append(options?.get("rankRoles")).append("`\n")
-        sb.append("Message counting system: `").append(options?.get("counting")).append("`\n")
-        sb.append("Guild member role: `").append(options?.get("guildMemberRole")).append("`\n")
+        val gmRole: Boolean = this.options?.get("guildMemberRole") == "true"
+        sb.append("Verified Role: `").append(this.options?.get("role")).append("`\n")
+        sb.append("Rank roles: `").append(this.options?.get("rankRoles")).append("`\n")
+        sb.append("Message counting system: `").append(this.options?.get("counting")).append("`\n")
+        sb.append("Guild member role: `").append(this.options?.get("guildMemberRole")).append("`\n")
         if (gmRole) {
-            sb.append("Guild Name: `").append(options?.get("guildID")).append("`\n")
+            sb.append("Guild Name: `").append(this.options?.get("guildID")).append("`\n")
         }
-        sb.append("Command prefix: `").append(options?.get("prefix")).append("`")
+        sb.append("Command prefix: `").append(this.options?.get("prefix")).append("`")
         return sb.toString()
     }
 
@@ -41,16 +41,11 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         if (event.author.isBot || event.channel.idLong != channelID || event.author.idLong != userID) {
             return
         }
-        if (event.message.contentRaw.equals("cancel", ignoreCase = true) && !inProgress) {
-            event.channel.sendMessage("setup cancelled.").queue()
-            event.jda.removeEventListener(this)
-            return
-        }
         if (event.message.contentRaw.equals("continue", ignoreCase = true) && !inProgress) {
             currentStep++
         }
         if (event.message.contentRaw.equals("exit", ignoreCase = true) && !inProgress) {
-            Database.saveConfig(event.guild.id, options)
+            Database.saveConfig(event.guild.id, this.options)
             val eb = EmbedBuilder()
             eb.setTitle("Setup exited")
             eb.setDescription(
@@ -58,17 +53,19 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                         "Current config for ${event.guild.name}:\n" +
                         showCurrentConfig()
             )
+            event.channel.sendMessage(eb.build()).queue()
             event.jda.removeEventListener(this)
+            this.options = null
             return
         }
         when (currentStep) {
             1 ->                 //verify role
                 if (inProgress) {
-                    options?.set("role", event.message.contentRaw)
+                    this.options?.set("role", event.message.contentRaw)
                     event.channel.sendMessage(
                         """
     OK: Verify Role is now set to: `${event.message.contentRaw}` Please make sure this role exists before proceeding
-    Type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+    Type `continue` to continue with the setup or  `exit` to save the config.
     """.trimIndent()
                     ).queue()
                     inProgress = false
@@ -76,7 +73,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                     event.channel.sendMessage(
                         """
     Welcome to the config setup
-    Please specify a Role users get when verifying successfully. This is currently set to `${options?.get("role")}`
+    Please specify a Role users get when verifying successfully. This is currently set to `${this.options?.get("role")}`
     """.trimIndent()
                     ).queue()
                     inProgress = true
@@ -85,7 +82,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 if (inProgress) {
                     when {
                         event.message.contentRaw.equals("enabled", ignoreCase = true) -> {
-                            options?.set("counting", "true")
+                            this.options?.set("counting", "true")
                             event.channel.sendMessage(
                                 "OK: Message counting system is now enabled. " +
                                         "With it come some commands:\n" +
@@ -93,16 +90,16 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                                         "${Conf.PREFIX}`check <user>`: shows how many messages you or a given user currently have\n" +
                                         "${Conf.PREFIX}`deleteMessages`: this command requires the \"Manage Server\" Permission and clears the current message counter for everyone in the server. (further confirmation is required)\n" +
 
-                                        "Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."
+                                        "Type `continue` to continue with the setup or  `exit` to save the config"
                             ).queue()
                             inProgress = false
                         }
                         event.message.contentRaw.equals("disabled", ignoreCase = true) -> {
-                            options?.set("counting", "false")
+                            this.options?.set("counting", "false")
 
                             event.channel.sendMessage(
                                 "OK: message counting system is now disabled\n" +
-                                        "Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving"
+                                        "Type `continue` to continue with the setup or  `exit` to save the config"
                             ).queue()
                             inProgress = false
                         }
@@ -123,22 +120,22 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 if (inProgress) {
                     when {
                         event.message.contentRaw.equals("enabled", ignoreCase = true) -> {
-                            options?.set("guildMemberRole", "true")
+                            this.options?.set("guildMemberRole", "true")
                             event.channel.sendMessage(
                                 """
                     OK: guild member role enabled. In the next step you will have to set a guild name. If you skip this step the feature will not work.
-                    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+                    Type `continue` to continue with the setup or  `exit` to save the config
                     """.trimIndent()
                             ).queue()
                             inProgress = false
                             return
                         }
                         event.message.contentRaw.equals("disabled", ignoreCase = true) -> {
-                            options?.set("guildMemberRole", "false")
+                            this.options?.set("guildMemberRole", "false")
                             event.channel.sendMessage(
                                 """
                     OK: guild member role disabled.
-                    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+                    Type `continue` to continue with the setup or  `exit` to save the config
                     """.trimIndent()
                             ).queue()
                             currentStep++
@@ -167,10 +164,10 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                         event.channel.sendMessage(
                             """
     An error occurred while validating the guild, defaulting to no guild role for now. Please try again later if you think this is a mistake
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+    Type `continue` to continue with the setup or  `exit` to save the config
     """.trimIndent()
                         ).queue()
-                        options?.set("guildMemberRole", "disabled")
+                        this.options?.set("guildMemberRole", "disabled")
                         inProgress = false
                         return
                     }
@@ -178,16 +175,16 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                         event.channel.sendMessage(
                             """
     Either this user is not in a guild or an error occurred while checking this. Please try again later if you believe this is a mistake. Defaulting to no guild role for now.
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+    Type `continue` to continue with the setup or  `exit` to save the config
     """.trimIndent()
                         ).queue()
-                        options?.set("guildMemberRole", "disabled")
+                        this.options?.set("guildMemberRole", "disabled")
                     } else {
-                        options?.set("guildID", guildName)
+                        this.options?.set("guildID", guildName)
                         event.channel.sendMessage(
                             """
     OK: Guild Name is now set to: `$guildName`
-    Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving.
+    Type `continue` to continue with the setup or  `exit` to save the config
     """.trimIndent()
                         ).queue()
                     }
@@ -206,20 +203,19 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                         return
                     } else {
                         if (message == "enabled") {
-                            options?.set("rankRoles", "true")
+                            this.options?.set("rankRoles", "true")
                         } else {
-                            options?.set("rankRoles", "false")
+                            this.options?.set("rankRoles", "false")
                         }
                     }
                     event.channel.sendMessage(
-                        "OK: Rank roles are now enabled\n" +
-                                "Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."
+                        "OK: Rank roles are now ${message}\n" + "Type `continue` to continue with the setup or  `exit` to save the config"
                     ).queue()
                     inProgress = false
                 } else {
                     event.channel.sendMessage(
                         "The bot can check the current rank of a user and give them the role for this rank." +
-                                "This requires the following roles:\n" +
+                                "This requires the following roles to be created:\n" +
                                 "`VIP`\n" +
                                 "`VIP+`\n" +
                                 "`MVP`\n" +
@@ -232,14 +228,14 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
             }
             6 -> {
                 inProgress = if (inProgress) {
-                    options?.set("prefix", event.message.contentRaw)
+                    this.options?.set("prefix", event.message.contentRaw)
                     event.channel.sendMessage(
                         "OK: Prefix is now set to: `${event.message.contentRaw}`." +
-                                "Please type `continue` to continue with the setup, `exit` to save the config and exit or `cancel` to exit without saving."
+                                "Type `continue` to continue with the setup or  `exit` to save the config"
                     ).queue()
                     false
                 } else {
-                    val currentPrefix = options?.get("prefix")
+                    val currentPrefix = this.options?.get("prefix")
                     event.channel.sendMessage(
                         "Now please set a prefix to be used." +
                                 "The current Prefix is `$currentPrefix`\n"
@@ -250,19 +246,23 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
 
             7 -> {
                 //final message
-                Database.saveConfig(event.guild.id, options)
+                Database.saveConfig(event.guild.id, this.options)
                 Cache.refreshOrAddCache(event.guild.id)
                 val eb = EmbedBuilder()
                 eb.setTitle("Setup finished")
                 eb.setDescription(
                     """
-    These are the current config options for ${event.guild.name}:
+    These are the current config this.options for ${event.guild.name}:
     ${showCurrentConfig()}
     """.trimIndent()
                 )
                 event.channel.sendMessage(eb.build()).queue()
                 done = true
+                this.options = null
                 event.jda.removeEventListener(this)
+            }
+            else -> {
+                event.channel.sendMessage("Invalid input.")
             }
         }
     }
@@ -280,17 +280,15 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         //        this.guildID = guild.getIdLong();
         done = false
         initEvent = event
-        //default options
-        options = Cache.getConfig(event.guild.id) as MutableMap<String?, String?>?
-        println(options)
-        if (!options?.contains("prefix")!!) {
-            options?.set("role", "Hypixel Verified")
-            options?.set("counting", "false")
-            options?.set("guildMemberRole", "false")
-            options?.set("guildID", "")
-            options?.set("prefix", Conf.PREFIX)
-            options?.set("rankRoles", "false")
-            println(options)
+        //default this.options
+        this.options = Cache.getConfig(event.guild.id) as MutableMap<String?, String?>?
+        if (!this.options?.contains("prefix")!!) {
+            this.options?.set("role", "Hypixel Verified")
+            this.options?.set("counting", "false")
+            this.options?.set("guildMemberRole", "false")
+            this.options?.set("guildID", "")
+            this.options?.set("prefix", Conf.PREFIX)
+            this.options?.set("rankRoles", "false")
         }
 
     }
