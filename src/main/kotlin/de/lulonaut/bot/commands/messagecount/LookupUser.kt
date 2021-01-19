@@ -1,27 +1,24 @@
 package de.lulonaut.bot.commands.messagecount
 
 import de.lulonaut.bot.Main
-import de.lulonaut.bot.commands.Aliases.LookupUserAliases
+import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Database
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 class LookupUser : ListenerAdapter() {
-    private var aliases: MutableList<String> = Stream.of(*LookupUserAliases.values())
-        .map { obj: LookupUserAliases -> obj.name }
-        .collect(Collectors.toList())
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
-        try {
-            if (!aliases.contains(msg[0].substring(1))) {
-                return
-            }
-        } catch (e: Exception) {
+        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (prefix == null) {
+            prefix = Conf.PREFIX
+        }
+
+        if (!msg[0].equals(prefix + "check", ignoreCase = true)) {
             return
         }
         if (msg.size != 2) {

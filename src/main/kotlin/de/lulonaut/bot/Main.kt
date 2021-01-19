@@ -1,6 +1,5 @@
 package de.lulonaut.bot
 
-import de.lulonaut.bot.commands.Calculate
 import de.lulonaut.bot.commands.LinkDiscordHelp
 import de.lulonaut.bot.commands.Verify
 import de.lulonaut.bot.commands.config.ConfigCommand
@@ -56,7 +55,6 @@ object Main {
     }
 
     private fun registerCommands() {
-        jda!!.addEventListener(Calculate())
         jda!!.addEventListener(Verify())
         jda!!.addEventListener(LinkDiscordHelp())
         jda!!.addEventListener(MessageLeaderboard())

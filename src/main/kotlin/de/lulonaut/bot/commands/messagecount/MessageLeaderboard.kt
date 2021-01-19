@@ -1,14 +1,14 @@
 package de.lulonaut.bot.commands.messagecount
 
-import java.lang.Exception
-import de.lulonaut.bot.utils.Database
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.EmbedBuilder
-import java.util.stream.Collectors
 import de.lulonaut.bot.commands.Aliases.LeaderboardAliases
-import java.util.LinkedList
-import java.lang.StringBuilder
+import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.utils.Conf
+import de.lulonaut.bot.utils.Database
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.util.*
+import java.util.stream.Collectors
 import java.util.stream.Stream
 
 class MessageLeaderboard : ListenerAdapter() {
@@ -18,11 +18,12 @@ class MessageLeaderboard : ListenerAdapter() {
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
-        try {
-            if (!aliases.contains(msg[0].substring(1))) {
-                return
-            }
-        } catch (e: Exception) {
+        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (prefix == null) {
+            prefix = Conf.PREFIX
+        }
+
+        if (!msg[0].equals(prefix + "leaderboard", ignoreCase = true)) {
             return
         }
         val users = LinkedList<String?>()

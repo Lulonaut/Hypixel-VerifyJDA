@@ -15,7 +15,10 @@ class Verify : ListenerAdapter() {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
         val apiResult: Array<String?>?
         val userDiscord = Objects.requireNonNull(event.member)!!.user.asTag
-        val prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (prefix == null) {
+            prefix = Conf.PREFIX
+        }
 
         if (!msg[0].equals(prefix + "verify", ignoreCase = true)) {
             return

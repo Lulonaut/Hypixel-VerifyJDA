@@ -1,13 +1,18 @@
 package de.lulonaut.bot.commands
 
+import de.lulonaut.bot.utils.Cache
 import de.lulonaut.bot.utils.Conf
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class LinkDiscordHelp : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
-        if (msg[0].equals(Conf.PREFIX + "linkdc", ignoreCase = true)) {
+        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (prefix == null) {
+            prefix = Conf.PREFIX
+        }
+        if (msg[0].equals(prefix + "linkdc", ignoreCase = true)) {
             event.channel.sendMessage(
                 """
                     1.Go to /lobby on Hypixel

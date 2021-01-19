@@ -1,27 +1,28 @@
 package de.lulonaut.bot.commands.messagecount
 
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.utils.Conf
 import net.dv8tion.jda.api.EmbedBuilder
-import java.util.stream.Collectors
-import de.lulonaut.bot.commands.Aliases.DeleteMessagesAliases
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.*
-import java.util.stream.Stream
 
 class DeleteAllMessages : ListenerAdapter() {
-    private var aliases: MutableList<String> = Stream.of(*DeleteMessagesAliases.values())
-        .map { obj: DeleteMessagesAliases -> obj.name }
-        .collect(Collectors.toList())
-
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
         if (event.author.isBot) {
             return
         }
-        if (!aliases.contains(msg[0].substring(1))) {
+        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        if (prefix == null) {
+            prefix = Conf.PREFIX
+        }
+
+        if (!msg[0].equals(prefix + "deleteMessages", ignoreCase = true)) {
             return
         }
+
         val eb = EmbedBuilder()
         val perms = Objects.requireNonNull(event.member)!!.permissions
         if (!perms.contains(Permission.MANAGE_SERVER)) {
