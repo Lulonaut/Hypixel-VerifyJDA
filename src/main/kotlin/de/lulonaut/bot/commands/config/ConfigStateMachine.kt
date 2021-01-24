@@ -47,7 +47,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         if (event.message.contentRaw.equals("exit", ignoreCase = true) && !inProgress) {
             Database.saveConfig(event.guild.id, this.options)
             val eb = EmbedBuilder()
-            eb.setTitle("Setup exited")
+            eb.setTitle("Setup closed")
             eb.setDescription(
                 "Config saved to Database.\n" +
                         "Current config for ${event.guild.name}:\n" +

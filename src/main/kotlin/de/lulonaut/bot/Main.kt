@@ -6,9 +6,11 @@ import de.lulonaut.bot.commands.config.ConfigCommand
 import de.lulonaut.bot.commands.messagecount.DeleteAllMessages
 import de.lulonaut.bot.commands.messagecount.LookupUser
 import de.lulonaut.bot.commands.messagecount.MessageLeaderboard
+import de.lulonaut.bot.listeners.GuildJoinListener
 import de.lulonaut.bot.listeners.MessageListener
 import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Config
+import de.lulonaut.bot.utils.Constants
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -20,6 +22,7 @@ import kotlin.system.exitProcess
 
 object Main {
     var jda: JDA? = null
+    var constants: Constants = Constants()
 
     @Throws(IOException::class, InterruptedException::class)
     @JvmStatic
@@ -48,10 +51,12 @@ object Main {
         println("All Events registered!")
         registerCommands()
         println("All Commands registered!")
+        constants.loadDefaultOptions()
     }
 
     private fun registerEvents() {
         jda!!.addEventListener(MessageListener())
+        jda!!.addEventListener(GuildJoinListener())
     }
 
     private fun registerCommands() {
