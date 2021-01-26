@@ -1,5 +1,8 @@
 package de.lulonaut.bot.utils
 
+import de.lulonaut.wrapper.APIWrapper
+import de.lulonaut.wrapper.core.API
+import de.lulonaut.wrapper.core.player.Player
 import io.github.reflxction.hypixelapi.HypixelAPI
 import io.github.reflxction.hypixelapi.player.SocialMediaType
 import org.json.JSONException
@@ -58,7 +61,7 @@ object API {
                 }
                 arrayOf(discord, nickname, rank, guild)
             }
-            "hypixel" -> {
+            "hypixel2" -> {
                 //establish API connection(s)
                 val api = HypixelAPI.create(Conf.APIKey)
                 val uuid =
@@ -86,6 +89,14 @@ object API {
                 } catch (e: Exception) {
                     guildObject!!["guild"].toString()
                 }
+                arrayOf(discord, nickname, rank, guild)
+            }
+            "hypixel" -> {
+                val api: API = APIWrapper.create(Conf.APIKey, true)
+                val player: Player = api.getPlayerByUsername(name)
+                discord = player.socialMedia.discord
+                nickname = player.displayName
+                rank = player.currentRank
                 arrayOf(discord, nickname, rank, guild)
             }
             else -> {

@@ -3,7 +3,7 @@ package de.lulonaut.bot.commands.config
 import de.lulonaut.bot.utils.Cache
 import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Database
-import de.lulonaut.bot.utils.GetGuild
+import de.lulonaut.bot.utils.Guild
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
@@ -32,6 +32,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         sb.append("Guild member role: `").append(this.options?.get("guildMemberRole")).append("`\n")
         if (gmRole) {
             sb.append("Guild Name: `").append(this.options?.get("guildID")).append("`\n")
+            sb.append("Guild member role: `").append(this.options?.get("guildRoleName")).append("`\n")
         }
         sb.append("Command prefix: `").append(this.options?.get("prefix")).append("`")
         return sb.toString()
@@ -138,7 +139,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                     Type `continue` to continue with the setup or  `exit` to save the config
                     """.trimIndent()
                             ).queue()
-                            currentStep++
+                            currentStep += 2
                             inProgress = false
                             return
                         }
@@ -159,7 +160,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 if (inProgress) {
                     val guildName: String?
                     try {
-                        guildName = GetGuild.getGuild(event.message.contentRaw)
+                        guildName = Guild.getGuild(event.message.contentRaw)
                     } catch (e: Exception) {
                         event.channel.sendMessage(
                             """
@@ -179,11 +180,12 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
     """.trimIndent()
                         ).queue()
                         this.options?.set("guildMemberRole", "disabled")
+                        currentStep++
                     } else {
                         this.options?.set("guildID", guildName)
                         event.channel.sendMessage(
                             """
-    OK: Guild Name is now set to: `$guildName`
+    OK: Guild Name is now set to: `$guildName` Now you need to set a role players get when they are in the guild.
     Type `continue` to continue with the setup or  `exit` to save the config
     """.trimIndent()
                         ).queue()
@@ -195,6 +197,20 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                     inProgress = true
                 }
             5 -> {
+                if (inProgress) {
+                    this.options?.set("guildRoleName", event.message.contentRaw)
+                    event.channel.sendMessage(
+                        "OK: Guild Member role is now set to: `${event.message.contentRaw}`\n" +
+                                "Type `continue` to continue with the setup or  `exit` to save the config"
+                    ).queue()
+                    inProgress = false
+                } else {
+                    event.channel.sendMessage("Please provide a role that is assigned to players that are in your guild.")
+                        .queue()
+                    inProgress = true
+                }
+            }
+            6 -> {      //rank role toggle
                 val message: String = event.message.contentRaw
                 if (inProgress) {
                     if (message != "enabled" && message != "disabled") {
@@ -226,7 +242,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                     inProgress = true
                 }
             }
-            6 -> {
+            7 -> {      //prefix
                 inProgress = if (inProgress) {
                     this.options?.set("prefix", event.message.contentRaw)
                     event.channel.sendMessage(
@@ -244,7 +260,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 }
             }
 
-            7 -> {
+            8 -> {
                 //final message
                 Database.saveConfig(event.guild.id, this.options)
                 Cache.refreshOrAddCache(event.guild.id)

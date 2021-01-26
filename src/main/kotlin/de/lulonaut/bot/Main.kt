@@ -1,5 +1,6 @@
 package de.lulonaut.bot
 
+import de.lulonaut.bot.commands.CheckConfig
 import de.lulonaut.bot.commands.LinkDiscordHelp
 import de.lulonaut.bot.commands.Verify
 import de.lulonaut.bot.commands.config.ConfigCommand
@@ -27,13 +28,7 @@ object Main {
     @Throws(IOException::class, InterruptedException::class)
     @JvmStatic
     fun main(args: Array<String>) {
-        TimeUnit.SECONDS.sleep(2)
         Conf.loadConf()
-        println("Prefix from Config set to: " + Conf.PREFIX)
-        if (Conf.RankRoles) {
-            println("You enabled rank roles. Please make sure the following roles exist: VIP, VIP+, MVP, MVP+, MVP++. Otherwise there will be constant Errors")
-        }
-        println("Config loaded.")
         try {
             //start bot with token
             jda = JDABuilder.createDefault(Config.getConf("token", false))
@@ -48,10 +43,9 @@ object Main {
             exitProcess(1)
         }
         registerEvents()
-        println("All Events registered!")
         registerCommands()
-        println("All Commands registered!")
         constants.loadDefaultOptions()
+        println("finished Loading.")
     }
 
     private fun registerEvents() {
@@ -66,5 +60,6 @@ object Main {
         jda!!.addEventListener(LookupUser())
         jda!!.addEventListener(DeleteAllMessages())
         jda!!.addEventListener(ConfigCommand())
+        jda!!.addEventListener(CheckConfig())
     }
 }

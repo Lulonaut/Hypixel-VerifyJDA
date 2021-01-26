@@ -23,35 +23,34 @@ object Conf {
     @Throws(IOException::class, AssertionError::class)
     fun loadConf() {
         try {
-            println("trying to load....")
             PREFIX = Config.getConf("prefix", false).toString()
-            println(PREFIX)
             VerifyRole = Config.getConf("role", false).toString()
-            println(VerifyRole)
             Endpoint = Config.getConf("apiendpoint", true).toString()
-            println(Endpoint)
-            println("looks good...")
-            if (!Endpoint.equals("hypixel", ignoreCase = true) && !Endpoint.equals("slothpixel", ignoreCase = true)) {
+            if (!Endpoint.equals("hypixel", ignoreCase = true) && !Endpoint.equals(
+                    "slothpixel",
+                    ignoreCase = true
+                ) && !Endpoint.equals("hypixel2", ignoreCase = true)
+            ) {
                 println("Invalid API endpoint, choose either Hypixel or Slothpixel. (Defaulting to Slothpixel)")
                 Endpoint = "slothpixel"
-            } else if (Endpoint.equals("hypixel", ignoreCase = true)) {
+            } else if (Endpoint.equals("hypixel", ignoreCase = true) || Endpoint.equals(
+                    "hypixel2",
+                    ignoreCase = true
+                )
+            ) {
                 APIKey = Config.getConf("hypixelapikey", true).toString()
             }
             if (Objects.requireNonNull(Config.getConf("rankroles", true)).equals("true", ignoreCase = true)) {
                 RankRoles = true
-                println(RankRoles)
             }
             if (Objects.requireNonNull(Config.getConf("guildroletoggle", false)).equals("true", ignoreCase = true)) {
                 GuildRoles = true
-                println(GuildRoles)
             }
             if (Config.getConf("guild", true) != null) {
                 Guild = Config.getConf("guild", true).toString()
-                println(Guild)
             }
             if (Config.getConf("guildrole", true) != null) {
                 GuildRole = Config.getConf("guildrole", true).toString()
-                println(GuildRole)
             }
         } catch (e: ConfigException) {
             e.printStackTrace()

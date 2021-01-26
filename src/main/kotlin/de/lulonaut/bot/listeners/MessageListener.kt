@@ -1,8 +1,6 @@
 package de.lulonaut.bot.listeners
 
-import de.lulonaut.bot.Main
 import de.lulonaut.bot.utils.Cache
-import de.lulonaut.bot.utils.Constants
 import de.lulonaut.bot.utils.Database
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter

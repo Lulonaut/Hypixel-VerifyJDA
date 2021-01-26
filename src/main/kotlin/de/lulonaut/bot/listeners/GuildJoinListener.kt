@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class GuildJoinListener : ListenerAdapter() {
     override fun onGuildJoin(event: GuildJoinEvent) {
+        //loads default config options when joining a new guild
         Database.saveConfig(event.guild.id, Main.constants.defaultOptions)
-        println("loaded default options for a new guild")
     }
 }

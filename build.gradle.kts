@@ -35,7 +35,7 @@ dependencies {
     implementation("com.github.ReflxctionDev:SimpleHypixelAPI:8eff50e")
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("redis.clients:jedis:3.4.1")
-    implementation("com.github.Lulonaut:HypixelAPIWrapper:d7e93b2f9c")
+    implementation("com.github.Lulonaut:HypixelAPIWrapper:-SNAPSHOT")
     implementation(kotlin("stdlib-jdk8"))
 }
 

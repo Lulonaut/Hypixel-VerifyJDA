@@ -1,12 +1,11 @@
 package de.lulonaut.bot.utils
 
-import java.io.IOException
-import java.lang.Exception
 import de.lulonaut.wrapper.APIWrapper
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
-object GetGuild {
+object Guild {
     fun getGuild(Username: String): String {
         return when (Conf.Endpoint) {
             "slothpixel" -> {
@@ -30,12 +29,11 @@ object GetGuild {
                     val guild = api.getGuildByUsername(Username).name
                     guild ?: ""
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     ""
                 }
             }
-            else -> {
-                ""
-            }
+            else -> ""
         }
     }
 }

@@ -11,21 +11,29 @@ import java.util.*
 
 class Verify : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        //Checking if it's the actual command
-        val msg = event.message.contentRaw.split(" ").toTypedArray()
-        val apiResult: Array<String?>?
-        val userDiscord = Objects.requireNonNull(event.member)!!.user.asTag
-        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
-        if (prefix == null) {
-            prefix = Conf.PREFIX
-        }
 
+        val config = Cache.getConfig(event.guild.id)
+        val prefix = config?.get("prefix")
+        val msg = event.message.contentRaw.split(" ").toTypedArray()
+        //checking if it's the actual command
         if (!msg[0].equals(prefix + "verify", ignoreCase = true)) {
             return
         }
+
+        //assigning variables that can already be assigned
+        val apiResult: Array<String?>?
+        val userDiscord = Objects.requireNonNull(event.member)!!.user.asTag
+        val rankRoles: Boolean = config?.get("rankRoles") == "true"
+        val minecraftGuildRole: Boolean = config?.get("guildMemberRole") == "true"
+        val verifyRole: String = config?.get("role").toString()
+        var minecraftGuild = ""
+        if (minecraftGuildRole) {
+            minecraftGuild = config?.get("guildID").toString()
+        }
+
         //Checking correct usage
         if (msg.size != 2) {
-            event.channel.sendMessage("Usage: " + prefix + "verify [Minecraft IGN]").queue()
+            event.channel.sendMessage("Usage: ${prefix}verify [Minecraft IGN]").queue()
             return
         }
 
@@ -41,6 +49,7 @@ class Verify : ListenerAdapter() {
                 return
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             event.channel.sendMessage(
                 "Some error occurred, " +
                         "API is probably down. Please try again later"
@@ -55,15 +64,17 @@ class Verify : ListenerAdapter() {
         var errorCount = 0
         var errors = 0
 
-        //Case: Discord is null (not Linked anything)
+
         when {
+            //Case 1: Discord is null (not Linked anything)
             discord == "null" -> {
                 event.channel.sendMessage(
                     "Looks you didn't link a Discord yet. If you don't know how to " +
-                            "add one please type '" + prefix + "linkdc'. If you just changed this please wait a few " +
+                            "add one please type '${prefix}linkdc'. If you just changed this please wait a few " +
                             "minutes and try again. (Spamming it won't do anything)"
                 ).queue()
             }
+            //Case 2: Discord was linked but doesn't match users discord
             userDiscord != discord -> {
                 event.channel.sendMessage(
                     "Your Discord Tag is: `" + userDiscord + "`. But a wise man told me " +
@@ -71,22 +82,25 @@ class Verify : ListenerAdapter() {
                             "few minutes and try again. (Spamming it won't do anything)"
                 ).queue()
             }
+            //Case 3: Discord does match (no if statement because it's the only outcome possible)
             else -> {
                 try {
-                    //Add Role(s)
-                    event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(Conf.VerifyRole, false)[0])
+                    //Add Role
+                    event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(verifyRole, false)[0])
                         .queue()
                     //Change Nickname
                     event.member!!.modifyNickname(nickname).queue()
 
                     //Add Role for Rank if enabled
-                    if (Conf.RankRoles) {
+                    if (rankRoles) {
+                        //change rank names from API to their more readable equivalent
                         when (rank) {
                             "VIP_PLUS" -> rank = "VIP+"
                             "MVP_PLUS" -> rank = "MVP+"
                             "MVP_PLUS_PLUS" -> rank = "MVP++"
                         }
                         try {
+                            //if rank is null the player has no rank -> no rank role needed, else assign rank role
                             if (rank != "null") {
                                 event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(rank!!, true)[0])
                                     .queue()
@@ -96,7 +110,8 @@ class Verify : ListenerAdapter() {
                                 .queue()
                         }
                     }
-                    if (Conf.GuildRoles && guild == Conf.Guild) {
+                    //if guild member roles are enabled and it matches the guild assign the member role
+                    if (minecraftGuildRole && guild == minecraftGuild) {
                         try {
                             event.guild.addRoleToMember(
                                 event.member!!,
@@ -115,15 +130,18 @@ class Verify : ListenerAdapter() {
                 }
                 when {
                     errorCount > 0 -> {
-                        event.channel.sendMessage("You have higher Perms than me so i couldn't change much. But your Discord matches the one linked on Minecraft :D")
+                        event.channel.sendMessage("You have higher Perms than me so i couldn't change much. But your Discord matches the one linked on Minecraft.")
                             .queue()
                     }
                     errors > 0 -> {
-                        event.channel.sendMessage("Some internal error happened, please contact a Admin :(").queue()
+                        event.channel.sendMessage(
+                            "Some Error occurred, most likely because of missing roles. " +
+                                    "Please make sure you have the verify Role and other roles you enabled.\n" +
+                                    "Check your current config with: `${prefix}checkConfig`"
+                        ).queue()
                     }
                     else -> {
-                        event.channel.sendMessage("You now have the " + Conf.VerifyRole + " Role. (and maybe some more)")
-                            .queue()
+                        event.channel.sendMessage("You now have the $verifyRole Role. (and maybe some more)").queue()
                     }
                 }
             }
