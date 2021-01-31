@@ -1,9 +1,6 @@
 package de.lulonaut.bot.commands.config
 
-import de.lulonaut.bot.utils.Cache
-import de.lulonaut.bot.utils.Conf
-import de.lulonaut.bot.utils.Database
-import de.lulonaut.bot.utils.Guild
+import de.lulonaut.bot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
@@ -160,7 +157,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
                 if (inProgress) {
                     val guildName: String?
                     try {
-                        guildName = Guild.getGuild(event.message.contentRaw)
+                        guildName = API.getGuild(event.message.contentRaw)
                     } catch (e: Exception) {
                         event.channel.sendMessage(
                             """

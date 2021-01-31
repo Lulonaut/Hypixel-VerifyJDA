@@ -106,9 +106,40 @@ object API {
         }
     }
 
+    fun getGuild(Username: String): String {
+        return when (Conf.Endpoint) {
+            "slothpixel" -> {
+                val gResponse: JSONObject? = try {
+                    readJsonFromUrl("https://api.slothpixel.me/api/guilds/$Username")
+                } catch (e: IOException) {
+                    return ""
+                }
+                if (gResponse != null && gResponse.has("guild")) {
+                    return ""
+                }
+                try {
+                    if (gResponse != null) gResponse.getString("name") else ""
+                } catch (e: JSONException) {
+                    ""
+                }
+            }
+            "hypixel" -> {
+                try {
+                    val api = APIWrapper.create(Conf.APIKey, true)
+                    val guild = api.getGuildByUsername(Username).name
+                    guild ?: ""
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+
     //util Functions for getting JSON (stolen from the Internet)
     @Throws(IOException::class)
-    fun readAll(rd: Reader): String {
+    private fun readAll(rd: Reader): String {
         val sb = StringBuilder()
         var cp: Int
         while (rd.read().also { cp = it } != -1) {
@@ -118,7 +149,7 @@ object API {
     }
 
     @Throws(IOException::class, JSONException::class)
-    fun readJsonFromUrl(url: String?): JSONObject? {
+    private fun readJsonFromUrl(url: String?): JSONObject? {
         try {
             URL(url).openStream().use { `is` ->
                 val rd = BufferedReader(InputStreamReader(`is`, StandardCharsets.UTF_8))

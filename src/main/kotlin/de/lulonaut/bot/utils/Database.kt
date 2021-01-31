@@ -23,7 +23,7 @@ object Database {
      * @param UserID  ID of the user
      */
     fun removeMessage(GuildID: String, UserID: String?) {
-        //TODO: find a way to get UserID (not possible rn)
+        //TODO: cache messages (messageID and UserID) and remove message from User ID when message is deleted
         j.hincrBy("verifyBot:messages:$GuildID", UserID, -1)
     }
 
