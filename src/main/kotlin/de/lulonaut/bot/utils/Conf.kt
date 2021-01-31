@@ -24,7 +24,6 @@ object Conf {
     fun loadConf() {
         try {
             PREFIX = Config.getConf("prefix", false).toString()
-            VerifyRole = Config.getConf("role", false).toString()
             Endpoint = Config.getConf("apiendpoint", true).toString()
             if (!Endpoint.equals("hypixel", ignoreCase = true) && !Endpoint.equals(
                     "slothpixel",
@@ -39,18 +38,6 @@ object Conf {
                 )
             ) {
                 APIKey = Config.getConf("hypixelapikey", true).toString()
-            }
-            if (Objects.requireNonNull(Config.getConf("rankroles", true)).equals("true", ignoreCase = true)) {
-                RankRoles = true
-            }
-            if (Objects.requireNonNull(Config.getConf("guildroletoggle", false)).equals("true", ignoreCase = true)) {
-                GuildRoles = true
-            }
-            if (Config.getConf("guild", true) != null) {
-                Guild = Config.getConf("guild", true).toString()
-            }
-            if (Config.getConf("guildrole", true) != null) {
-                GuildRole = Config.getConf("guildrole", true).toString()
             }
         } catch (e: ConfigException) {
             e.printStackTrace()

@@ -32,9 +32,7 @@ object Config {
         val props = Properties()
         val dir = File(filePath)
         if (!dir.exists()) {
-            dir.mkdirs()
-            println("Created config file so it needs to be filled first!")
-            throw ConfigNotFoundException("Created a config file in $filePath. Please fill it like here: https://github.com/Lulonaut/Hypixel-VerifyJDA/blob/master/config/config.properties")
+            throw ConfigNotFoundException("Please create a config file under config/config.properties and  fill it like here: https://github.com/Lulonaut/Hypixel-VerifyJDA/blob/master/config/config.properties")
         }
         try {
             val file = FileInputStream(filePath)

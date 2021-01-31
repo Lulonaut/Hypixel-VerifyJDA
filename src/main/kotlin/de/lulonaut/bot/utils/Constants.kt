@@ -8,6 +8,6 @@ class Constants {
         defaultOptions?.set("guildMemberRole", "false")
         defaultOptions?.set("role", "Hypixel Verified")
         defaultOptions?.set("rankRoles", "false")
-        defaultOptions?.set("prefix", "+")
+        defaultOptions?.set("prefix", Conf.PREFIX)
     }
 }
