@@ -97,6 +97,7 @@ object API {
                 discord = player.socialMedia.discord
                 nickname = player.displayName
                 rank = player.currentRank
+                guild = api.getGuildByUsername("Lulonaut").name
                 arrayOf(discord, nickname, rank, guild)
             }
             else -> {

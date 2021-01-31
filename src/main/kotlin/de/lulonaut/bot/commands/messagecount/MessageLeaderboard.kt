@@ -1,6 +1,5 @@
 package de.lulonaut.bot.commands.messagecount
 
-import de.lulonaut.bot.commands.Aliases.LeaderboardAliases
 import de.lulonaut.bot.utils.Cache
 import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Database
@@ -8,13 +7,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 class MessageLeaderboard : ListenerAdapter() {
-    private var aliases: MutableList<String> = Stream.of(*LeaderboardAliases.values())
-        .map { obj: LeaderboardAliases -> obj.name }
-        .collect(Collectors.toList())
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()

@@ -24,17 +24,27 @@ class Verify : ListenerAdapter() {
         val apiResult: Array<String?>?
         val userDiscord = Objects.requireNonNull(event.member)!!.user.asTag
         val rankRoles: Boolean = config?.get("rankRoles") == "true"
-        val minecraftGuildRole: Boolean = config?.get("guildMemberRole") == "true"
+        val minecraftGuildRoleToggle: Boolean = config?.get("guildMemberRole") == "true"
         val verifyRole: String = config?.get("role").toString()
         var minecraftGuild = ""
-        if (minecraftGuildRole) {
+        var minecraftGuildRole = ""
+        if (minecraftGuildRoleToggle) {
             minecraftGuild = config?.get("guildID").toString()
+            minecraftGuildRole = config?.get("guildRoleName").toString()
         }
-
         //Checking correct usage
         if (msg.size != 2) {
             event.channel.sendMessage("Usage: ${prefix}verify [Minecraft IGN]").queue()
             return
+        }
+        //checking possible config error
+        if (minecraftGuildRoleToggle && minecraftGuild == "null") {
+            event.channel.sendMessage("WARNING: Guild Member roles are enabled but no guild was set. Please ask a staff member to rerun the config with `${prefix}config`\nThis will probably result in an error!")
+                .queue()
+        }
+        if (minecraftGuildRoleToggle && minecraftGuildRole == "null") {
+            event.channel.sendMessage("WARNING: Guild Member roles are enabled but no role for Guild Members was set. Please ask a staff member to rerun the config with `${prefix}config`\nThis will probably result in an error!")
+                .queue()
         }
 
         //Command logic
@@ -49,10 +59,9 @@ class Verify : ListenerAdapter() {
                 return
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             event.channel.sendMessage(
                 "Some error occurred, " +
-                        "API is probably down. Please try again later"
+                        "API is probably down. Please try again later!"
             ).queue()
             return
         }
@@ -90,58 +99,66 @@ class Verify : ListenerAdapter() {
                         .queue()
                     //Change Nickname
                     event.member!!.modifyNickname(nickname).queue()
-
-                    //Add Role for Rank if enabled
-                    if (rankRoles) {
-                        //change rank names from API to their more readable equivalent
-                        when (rank) {
-                            "VIP_PLUS" -> rank = "VIP+"
-                            "MVP_PLUS" -> rank = "MVP+"
-                            "MVP_PLUS_PLUS" -> rank = "MVP++"
-                        }
-                        try {
-                            //if rank is null the player has no rank -> no rank role needed, else assign rank role
-                            if (rank != "null") {
-                                event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(rank!!, true)[0])
-                                    .queue()
-                            }
-                        } catch (e: Exception) {
-                            event.channel.sendMessage("Looks like a rank role does not exist, please ask a Staff Member to add the following Role: `$rank`")
-                                .queue()
-                        }
-                    }
-                    //if guild member roles are enabled and it matches the guild assign the member role
-                    if (minecraftGuildRole && guild == minecraftGuild) {
-                        try {
-                            event.guild.addRoleToMember(
-                                event.member!!,
-                                event.guild.getRolesByName(Conf.GuildRole, true)[0]
-                            ).queue()
-                        } catch (e: Exception) {
-                            event.channel.sendMessage("Looks like a role called " + Conf.GuildRole + " doesn't exist. Please ask an Admin to add it!")
-                                .queue()
-                        }
-                    }
                 } catch (e: HierarchyException) {
                     errorCount++
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    errors++
+                } catch (e: IndexOutOfBoundsException) {
+                    event.channel.sendMessage("Looks like the verified role doesn't exist, please ask a Staff Member to add the following Role: `${verifyRole}`")
+                        .queue()
+                }
+
+
+                //Add Role for Rank if enabled
+                if (rankRoles) {
+                    //change rank names from API to their more readable equivalent
+                    when (rank) {
+                        "VIP_PLUS" -> rank = "VIP+"
+                        "MVP_PLUS" -> rank = "MVP+"
+                        "MVP_PLUS_PLUS" -> rank = "MVP++"
+                    }
+                    try {
+                        //if rank is null the player has no rank -> no rank role needed, else assign rank role
+                        if (rank != "null") {
+                            event.guild.addRoleToMember(event.member!!, event.guild.getRolesByName(rank!!, true)[0])
+                                .queue()
+                        }
+                    } catch (e: HierarchyException) {
+                        errorCount++
+                    } catch (e: IndexOutOfBoundsException) {
+                        event.channel.sendMessage("Looks like a role for your rank does not exist, please ask a Staff Member to add the following Role: `$rank`")
+                            .queue()
+                    } catch (e: Exception) {
+                        errors++
+                    }
+                }
+                //if guild member roles are enabled and it matches the guild assign the member role
+                if (minecraftGuildRoleToggle && guild == minecraftGuild) {
+                    try {
+                        event.guild.addRoleToMember(
+                            event.member!!,
+                            event.guild.getRolesByName(minecraftGuildRole, true)[0]
+                        ).queue()
+                    } catch (e: HierarchyException) {
+                        errorCount++
+                    } catch (e: IndexOutOfBoundsException) {
+                        event.channel.sendMessage("Looks like the role for guild members does not exist, please ask a Staff Member to add the following Role: `$minecraftGuild`")
+                            .queue()
+                    } catch (e: Exception) {
+                        errors++
+                    }
                 }
                 when {
                     errorCount > 0 -> {
-                        event.channel.sendMessage("You have higher Perms than me so i couldn't change much. But your Discord matches the one linked on Minecraft.")
+                        event.channel.sendMessage("The Bot can't assign roles to users with higher roles then itself.")
                             .queue()
                     }
                     errors > 0 -> {
                         event.channel.sendMessage(
-                            "Some Error occurred, most likely because of missing roles. " +
-                                    "Please make sure you have the verify Role and other roles you enabled.\n" +
-                                    "Check your current config with: `${prefix}checkConfig`"
+                            "Some Error occurred and it doesn't look like it's your fault. Please report this to Lulonaut#3350 on Discord, thanks. \n" +
+                                    "If everything worked like it should ignore this message."
                         ).queue()
                     }
                     else -> {
-                        event.channel.sendMessage("You now have the $verifyRole Role. (and maybe some more)").queue()
+                        event.channel.sendMessage("You now have the `${verifyRole}` role.").queue()
                     }
                 }
             }
