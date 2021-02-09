@@ -13,7 +13,7 @@ object Database {
      * @param UserID  ID of the user
      */
     fun addMessage(GuildID: String, UserID: String?) {
-        j.hincrBy("messages:$GuildID", UserID, 1)
+        j.hincrBy("verifyBot:messages:$GuildID", UserID, 1)
     }
 
     /**
@@ -22,8 +22,7 @@ object Database {
      * @param GuildID ID of the server (called guild internally)
      * @param UserID  ID of the user
      */
-    fun removeMessage(GuildID: String, UserID: String?) {
-        //TODO: cache messages (messageID and UserID) and remove message from User ID when message is deleted
+    fun removeMessage(GuildID: String, UserID: String) {
         j.hincrBy("verifyBot:messages:$GuildID", UserID, -1)
     }
 
@@ -47,7 +46,7 @@ object Database {
      * @return sorted map of users and messages
      */
     fun sort(GuildID: String): Map<String, Int> {
-        val messages = j.hgetAll("messages:$GuildID")
+        val messages = j.hgetAll("verifyBot:messages:$GuildID")
         val longMessages: MutableMap<String, Int> = HashMap()
         for (key in messages.keys) {
             longMessages[key] = messages[key]!!.toInt()

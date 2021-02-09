@@ -1,6 +1,6 @@
 package de.lulonaut.bot.commands.messagecount
 
-import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.cache.DatabaseCache
 import de.lulonaut.bot.utils.Conf
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -14,10 +14,7 @@ class DeleteAllMessages : ListenerAdapter() {
         if (event.author.isBot) {
             return
         }
-        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
-        if (prefix == null) {
-            prefix = Conf.PREFIX
-        }
+        val prefix = DatabaseCache.getConfig(event.guild.id)?.get("prefix")
 
         if (!msg[0].equals(prefix + "deleteMessages", ignoreCase = true)) {
             return
@@ -27,7 +24,7 @@ class DeleteAllMessages : ListenerAdapter() {
         val perms = Objects.requireNonNull(event.member)!!.permissions
         if (!perms.contains(Permission.MANAGE_SERVER)) {
             eb.setTitle("Error!")
-            eb.setDescription("")
+            eb.setDescription("You don't have the `Manage Server` permission.")
             event.channel.sendMessage(eb.build()).queue()
             return
         }

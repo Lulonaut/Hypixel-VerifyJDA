@@ -1,6 +1,6 @@
 package de.lulonaut.bot.commands.config
 
-import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.cache.DatabaseCache
 import de.lulonaut.bot.utils.Conf
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -10,7 +10,7 @@ import java.util.*
 
 class ConfigCommand : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        var prefix = DatabaseCache.getConfig(event.guild.id)?.get("prefix")
         if (prefix == null) {
             prefix = Conf.PREFIX
         }

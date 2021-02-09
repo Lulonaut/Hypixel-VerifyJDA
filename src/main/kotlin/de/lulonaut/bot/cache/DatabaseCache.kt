@@ -1,6 +1,8 @@
-package de.lulonaut.bot.utils
+package de.lulonaut.bot.cache
 
-object Cache {
+import de.lulonaut.bot.utils.Database
+
+object DatabaseCache {
     private var cache: MutableMap<String, Map<String?, String?>?>? = HashMap()
     fun refreshOrAddCache(GuildID: String) {
         cache!![GuildID] = Database.loadConfig(GuildID)

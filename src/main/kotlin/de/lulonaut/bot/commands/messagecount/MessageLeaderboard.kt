@@ -1,6 +1,6 @@
 package de.lulonaut.bot.commands.messagecount
 
-import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.cache.DatabaseCache
 import de.lulonaut.bot.utils.Conf
 import de.lulonaut.bot.utils.Database
 import net.dv8tion.jda.api.EmbedBuilder
@@ -12,7 +12,7 @@ class MessageLeaderboard : ListenerAdapter() {
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         val msg = event.message.contentRaw.split(" ").toTypedArray()
-        var prefix = Cache.getConfig(event.guild.id)?.get("prefix")
+        var prefix = DatabaseCache.getConfig(event.guild.id)?.get("prefix")
         if (prefix == null) {
             prefix = Conf.PREFIX
         }

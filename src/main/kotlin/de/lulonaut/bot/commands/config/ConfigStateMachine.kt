@@ -1,5 +1,6 @@
 package de.lulonaut.bot.commands.config
 
+import de.lulonaut.bot.cache.DatabaseCache
 import de.lulonaut.bot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
@@ -260,7 +261,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
             8 -> {
                 //final message
                 Database.saveConfig(event.guild.id, this.options)
-                Cache.refreshOrAddCache(event.guild.id)
+                DatabaseCache.refreshOrAddCache(event.guild.id)
                 val eb = EmbedBuilder()
                 eb.setTitle("Setup finished")
                 eb.setDescription(
@@ -294,7 +295,7 @@ class ConfigStateMachine(channel: MessageChannel, event: GuildMessageReceivedEve
         done = false
         initEvent = event
         //default this.options
-        this.options = Cache.getConfig(event.guild.id) as MutableMap<String?, String?>?
+        this.options = DatabaseCache.getConfig(event.guild.id) as MutableMap<String?, String?>?
         if (!this.options?.contains("prefix")!!) {
             this.options?.set("role", "Hypixel Verified")
             this.options?.set("counting", "false")

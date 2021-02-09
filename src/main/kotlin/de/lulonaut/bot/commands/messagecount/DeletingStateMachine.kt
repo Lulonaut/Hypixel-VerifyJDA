@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.User
 class DeletingStateMachine(channel: MessageChannel, author: User) : ListenerAdapter() {
     private val channelID: Long = channel.idLong
     private val userID: Long = author.idLong
-    private var success = false
     private var usages: Int = 0
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.author.isBot) {
@@ -30,11 +29,9 @@ class DeletingStateMachine(channel: MessageChannel, author: User) : ListenerAdap
                 return
             }
             event.channel.sendMessage("Not resetting.").queue()
-            success = false
         } else {
             Database.removeAllMessages(event.guild.id)
             event.channel.sendMessage("Counter reset.").queue()
-            success = true
         }
         //remove event listener when its done
         event.jda.removeEventListener(this)

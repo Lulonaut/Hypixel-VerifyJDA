@@ -1,7 +1,7 @@
 package de.lulonaut.bot.commands
 
 import de.lulonaut.bot.utils.API
-import de.lulonaut.bot.utils.Cache
+import de.lulonaut.bot.cache.DatabaseCache
 import de.lulonaut.bot.utils.Conf
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.HierarchyException
@@ -12,7 +12,7 @@ import java.util.*
 class Verify : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
 
-        val config = Cache.getConfig(event.guild.id)
+        val config = DatabaseCache.getConfig(event.guild.id)
         val prefix = config?.get("prefix")
         val msg = event.message.contentRaw.split(" ").toTypedArray()
         //checking if it's the actual command
